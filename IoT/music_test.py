@@ -3,7 +3,6 @@ import sys
 import subprocess
 import time
 import pexpect
-import pty
 from multiprocessing import Process
 
 
@@ -25,6 +24,9 @@ child.send('-')
 child.send('-')
 child.send('-')
 time.sleep(2)
+child.send(' ')
+time.sleep(5)
+child.send(' ')
 child.send('=')
 child.send('=')
 child.send('=')
