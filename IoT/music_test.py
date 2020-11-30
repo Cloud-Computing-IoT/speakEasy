@@ -32,7 +32,7 @@ def terminateProcess(self, child):
 
 
 if __name__ == '__main__':
-	music_child = spawnMusicPlayerChild()
+	music_child = spawnMusicChild()
 	# recording_child = spawnRecordingChild()
 	changeMusicOutput(VOLUME_DOWN, music_child)
 	time.sleep(2)
