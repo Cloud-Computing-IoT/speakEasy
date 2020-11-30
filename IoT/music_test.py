@@ -6,32 +6,54 @@ import pexpect
 from multiprocessing import Process
 
 
-music_path = "/home/pi/mp3_test.mp3"
+MUSIC_PATH = "/home/pi/{music}"
+sample_music = "mp3_test.mp3"
+RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_name}.wav"
+VOLUME_UP = '='
+VOLUME_DOWN = '-'
+PAUSE = ' '
 #os.system("omxplayer mp3_test.mp3")
 #omxprocess = subprocess.Popen(['omxplayer', music_path],stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-child = pexpect.spawn('omxplayer /home/pi/mp3_test.mp3')
-#def omx_constructor(music_path):
-#	os.system('omxplayer ' + music_path) 
 
-#if __name__ == '__main__':
-#	p = Process(target = omx_constructor, args = (music_path))
-#	p.start()
-#	time.sleep(2)
+def spawnMusicChild(self):
+	child = pexpect.spawn('omxplayer ' + MUSIC_PATH.format(music = sample_music))
+	return child
 
-time.sleep(2)
-child.send('-')
-child.send('-')
-child.send('-')
-child.send('-')
-time.sleep(2)
-child.send(' ')
-time.sleep(5)
-child.send(' ')
-child.send('=')
-child.send('=')
-child.send('=')
-child.send('=')
-time.sleep(2)
+def spawnRecordingChild(self, record_time, file_name):
+	child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file = file_name))
+	return child
+
+def changeMusicOutput(self, command, musicChild):
+	music_child.send(command)
+	print(music_child.before)
+
+def terminateProcess(self, child):
+	child.close()
+
+
+if __name__ == '__main__':
+	music_child = spawnMusicPlayerChild()
+	# recording_child = spawnRecordingChild()
+	changeMusicOutput(VOLUME_DOWN, music_child)
+	time.sleep(2)
+	changeMusicOutput(VOLUME_DOWN, music_child)
+	time.sleep(2)
+	terminateProcess(music_child)
+
+# time.sleep(2)
+# child.send('-')
+# child.send('-')
+# child.send('-')
+# child.send('-')
+# time.sleep(2)
+# child.send(' ')
+# time.sleep(5)
+# child.send(' ')
+# child.send('=')
+# child.send('=')
+# child.send('=')
+# child.send('=')
+# time.sleep(2)
 #child.terminate()
 #omxprocess.call(input='-'.encode())
 #omxprocess.stdin.write('-'.encode())
