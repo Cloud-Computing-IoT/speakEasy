@@ -19,7 +19,7 @@ class MusicChild:
 
 	def changeMusicOutput(self, command):
 		self.child.send(command)
-		print(self.child.before)
+		print(self.child.read())
 
 	def terminateProcess(self):
 		self.child.close()
