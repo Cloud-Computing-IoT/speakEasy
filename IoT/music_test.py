@@ -7,6 +7,7 @@ from multiprocessing import Process
 
 
 MUSIC_PATH = "/home/pi/{music}"
+OMXPLAYER_START = "delay: 0\r\n"
 sample_music = "mp3_test.mp3"
 RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_name}.wav"
 VOLUME_UP = '='
@@ -16,6 +17,7 @@ PAUSE = ' '
 class MusicChild:
 	def __init__(self):
 		self.child = pexpect.spawn('omxplayer ' + MUSIC_PATH.format(music = sample_music))
+		self.child.expect(OMXPLAYER_START)
 
 	def changeMusicOutput(self, command):
 		self.child.send(command)
