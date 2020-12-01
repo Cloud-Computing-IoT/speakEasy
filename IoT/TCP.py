@@ -1,5 +1,6 @@
 import os
 import socket
+import wave
 
 # TCP_IP = "192.168.86.26"
 # TCP_PORT = 5005
@@ -16,7 +17,8 @@ class TCPsocket:
         self.s.send(message.encode())
 
     def sendFile(self, path):
-        f = open(path, 'r')
+        print("PATH: " + path)
+        f = wave.open(path, 'rb')
         l = f.read(1024)
         while(l):
             print("sending...")
