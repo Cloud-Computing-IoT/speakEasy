@@ -18,7 +18,7 @@ class TCPsocket:
 
     def sendFile(self, path):
         print("PATH: " + path)
-        f = wave.open(path, 'rb')
+        f = open(path, 'rb')
         l = f.read(1024)
         while(l):
             print("sending...")
