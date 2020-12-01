@@ -3,10 +3,11 @@ import sys
 import time
 import pexpect
 import socket
+import TCP as tcp
 
 TCP_IP = "192.168.86.26"
 TCP_PORT = 5005
-BUFFER = 1024
+# BUFFER = 1024
 MESSAGE = "Hello, world!"
 
 HOME_DIREC = "/home/pi/"
@@ -40,11 +41,14 @@ class RecordChild:
 
 
 if __name__ == '__main__':
-	music_child = MusicChild()
-	recording_child = RecordChild(5,"test")
-	# recording_child.terminateProcess()
-	for i in range(5):
-		time.sleep(1)
-		music_child.changeMusicOutput(VOLUME_DOWN)
-	time.sleep(5)
-	music_child.terminateProcess()
+
+	AWS_socket = tcp.TCPsocket(TCP_IP, TCP_PORT)
+	AWS_socket.sendData(MESSAGE)
+	# music_child = MusicChild()
+	# recording_child = RecordChild(5,"test")
+	# # recording_child.terminateProcess()
+	# for i in range(5):
+	# 	time.sleep(1)
+	# 	music_child.changeMusicOutput(VOLUME_DOWN)
+	# time.sleep(5)
+	# music_child.terminateProcess()
