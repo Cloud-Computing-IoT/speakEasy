@@ -32,7 +32,7 @@ class RecordChild:
 	def __init__(self, record_time, file_name):
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
 		self.child.expect(RECORD_START)
-		time.sleep(record_time)
+		time.sleep(record_time + 1)
 
 	def terminateProcess(self):
 		self.child.close()
