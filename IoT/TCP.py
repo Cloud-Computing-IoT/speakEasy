@@ -15,6 +15,16 @@ class TCPsocket:
     def sendData(self, message):
         self.s.send(message.encode())
 
+    def sendFile(self, path):
+        f = open(path, 'r')
+        l = f.read(1024)
+        while(l):
+            print("sending...")
+            self.sendData(l)
+            l = f.read(1024)
+        f.close()
+        print("done sending")
+
     def receive(self):
         data = self.s.recv(BUFFER_SIZE)
         return data.decode()

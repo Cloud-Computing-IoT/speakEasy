@@ -43,7 +43,7 @@ class RecordChild:
 if __name__ == '__main__':
 
 	AWS_socket = tcp.TCPsocket(TCP_IP, TCP_PORT)
-	AWS_socket.sendData(MESSAGE)
+	AWS_socket.sendFile(HOME_DIREC + "test.wav")
 	# music_child = MusicChild()
 	# recording_child = RecordChild(5,"test")
 	# # recording_child.terminateProcess()
