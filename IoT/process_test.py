@@ -1,14 +1,15 @@
 import os
+import socket
 
+TCP_IP = "192.168.86.26"
+TCP_PORT = 5005
+BUFFER = 1024
+MESSAGE = "Hello, world!"
 
-r,w = os.pipe()
-process = os.fork()
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect((TCP_IP,TCP_PORT))
+s.send(MESSAGE)
+data = s.recv(BUFFER)
+s.close()
 
-if process:
-	os.close(r)
-	w = os.fdopen(w, 'w')
-	w.write('=')
-else:
-	w = os.fdopen(w, 'w')
-	w.write("omxplayer mp3_test.mp3")
-	r= os.fdopen(r)
+print("DATA: " + data)
