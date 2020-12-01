@@ -22,7 +22,7 @@ class MusicChild:
 	def changeMusicOutput(self, command):
 		self.child.send(command)
 		self.child.expect("\r\n")
-		print(self.child.before)
+		print(self.child.before.encode())
 		# print(self.child.after)
 
 	def terminateProcess(self):
