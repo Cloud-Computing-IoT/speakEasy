@@ -1,14 +1,10 @@
 import os
-import sys
 import time
 import pexpect
-import socket
 import TCP as tcp
 
 TCP_IP = "192.168.86.26"
 TCP_PORT = 5005
-# BUFFER = 1024
-MESSAGE = "Hello, world!"
 
 HOME_DIREC = "/home/pi/"
 MUSIC_PATH = "/home/pi/{music}"
@@ -30,6 +26,7 @@ class MusicChild:
 		self.child.send(command)
 		self.child.expect("\r\n")
 		output = self.child.before.decode()
+		return output
 
 	def terminateProcess(self):
 		self.child.close()
@@ -38,6 +35,7 @@ class RecordChild:
 	def __init__(self, record_time, file_name):
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
 		# this process will automatically terminate after it records for 'record_time'
+
 
 
 if __name__ == '__main__':

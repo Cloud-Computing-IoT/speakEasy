@@ -1,10 +1,8 @@
 import os
 import socket
-import wave
 
-# TCP_IP = "192.168.86.26"
-# TCP_PORT = 5005
 BUFFER_SIZE = 1024
+FILE_READ_SIZE = 1024
 
 
 
@@ -13,19 +11,16 @@ class TCPsocket:
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.s.connect((TCP_IP,TCP_PORT))
 
-    def sendData(self, message):
+    def sendMessage(self, message):
         self.s.send(message.encode())
 
     def sendFile(self, path):
-        print("PATH: " + path)
         f = open(path, 'rb')
-        l = f.read(1024)
+        l = f.read(FILE_READ_SIZE)
         while(l):
-            print("sending...")
             self.s.send(l)
-            l = f.read(1024)
+            l = f.read(FILE_READ_SIZE)
         f.close()
-        print("done sending")
 
     def receive(self):
         data = self.s.recv(BUFFER_SIZE)
