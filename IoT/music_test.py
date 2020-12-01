@@ -8,6 +8,7 @@ from multiprocessing import Process
 HOME_DIREC = "/home/pi/"
 MUSIC_PATH = "/home/pi/{music}"
 OMXPLAYER_START = "delay: 0\r\n"
+RECORD_START = "Stereo\r\n"
 sample_music = "mp3_test.mp3"
 RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_path}{file}.wav"
 VOLUME_UP = '='
@@ -30,7 +31,9 @@ class MusicChild:
 class RecordChild:
 	def __init__(self, record_time, file_name):
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
-	
+		self.child.expect(RECORD_START)
+		time.sleep(record_time)
+
 	def terminateProcess(self):
 		self.child.close()
 
