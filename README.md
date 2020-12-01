@@ -6,10 +6,10 @@ https://drive.google.com/drive/u/1/folders/1DA_jWyUNl5f5mxwNiFI4wogO564nuH4U
 
 
 
-AudioSet Dataset:
+AudioSet Dataset (Google provides lots of audio data which has already been feature-extracted to 128-D features with labels of various audio events):
 https://research.google.com/audioset/download.html
 
-Feature Extractor Program (this takes in your audio files and generates the 128-D features for each second):
+Feature Extractor Program (this takes in audio files and generates the 128-D features for each second):
 https://github.com/tensorflow/models/tree/master/research/audioset/vggish
 
 Classifier Starter Code:
