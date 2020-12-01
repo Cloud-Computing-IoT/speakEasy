@@ -9,7 +9,7 @@ HOME_DIREC = "/home/pi/"
 MUSIC_PATH = "/home/pi/{music}"
 OMXPLAYER_START = "delay: 0\r\n"
 sample_music = "mp3_test.mp3"
-RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_path}{file_name}.wav"
+RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_path}{file}.wav"
 VOLUME_UP = '='
 VOLUME_DOWN = '-'
 PAUSE = ' '
