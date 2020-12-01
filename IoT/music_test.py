@@ -20,8 +20,8 @@ class MusicChild:
 	def changeMusicOutput(self, command):
 		self.child.send(command)
 		self.child.expect("Current Volume:")
-		print("BEFORE: " + str(self.child.before))
-		print("AFTER: " + str(self.child.after))
+		print(self.child.before)
+		print(self.child.after)
 
 	def terminateProcess(self):
 		self.child.close()
