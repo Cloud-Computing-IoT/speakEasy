@@ -31,16 +31,17 @@ class MusicChild:
 class RecordChild:
 	def __init__(self, record_time, file_name):
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
-		self.child.expect(RECORD_START)
-		time.sleep(record_time + 1)
+		# self.child.expect(RECORD_START)
+		# time.sleep(record_time + 1)
+		self.child.wait()
 
-	def terminateProcess(self):
-		self.child.close()
+	# def terminateProcess(self):
+	# 	self.child.close()
 
 if __name__ == '__main__':
 	# music_child = MusicChild()
 	recording_child = RecordChild(5,"test")
-	recording_child.terminateProcess()
+	# recording_child.terminateProcess()
 	# music_child.changeMusicOutput(VOLUME_DOWN)
 	# time.sleep(2)
 	# music_child.changeMusicOutput(VOLUME_DOWN)
