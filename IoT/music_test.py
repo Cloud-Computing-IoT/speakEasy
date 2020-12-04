@@ -70,12 +70,3 @@ if __name__ == '__main__':
 		elif message.lower() == "record":
 			recording_child = RecordChild(5,"test")
 			AWS_socket.sendMessage("Recording...")
-
-		# AWS_socket.sendMessage(message)
-	# recording_child = RecordChild(5,"test")
-	# # recording_child.terminateProcess()
-	# for i in range(5):
-	# 	time.sleep(1)
-	# 	music_child.changeMusicOutput(VOLUME_DOWN)
-	# time.sleep(5)
-	# music_child.terminateProcess()
