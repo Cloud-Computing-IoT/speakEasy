@@ -23,7 +23,7 @@ class MusicChild:
 
 	def changeMusicOutput(self, command):
 		self.child.send(command)
-		if command = " ":
+		if command == " ":
 			output = None
 		else: 
 			self.child.expect("\r\n")
