@@ -53,6 +53,7 @@ if __name__ == '__main__':
 	# recording_child = RecordChild(5,"rec{}".format(rec_count))
 	recording_child = pexpect.spawn(RECORD_COMMAND2)
 	while True:
+		continue
 	"""
 	rec_count = 0 #adds number to file recorded
 	AWS_socket = tcp.TCPsocket()
