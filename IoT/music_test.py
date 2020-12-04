@@ -13,6 +13,7 @@ SONG1 = "mp3_test.mp3"
 SONG2 = "Lite_Weight.mp3"
 SONG3 = "24kGoldn.mp3"
 RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_path}{file}.wav"
+RECORD_COMMAND2 = "arecord -D hw:1,0 -f cd | nc " + TCP_IP + " 5005"
 VOLUME_UP = '='
 VOLUME_DOWN = '-'
 PAUSE = ' '
@@ -49,6 +50,9 @@ def cleanUpRecordings(current_num):
 
 
 if __name__ == '__main__':
+	# recording_child = RecordChild(5,"rec{}".format(rec_count))
+	recording_child = pexpect.spawn(RECORD_COMMAND2)
+	"""
 	rec_count = 0 #adds number to file recorded
 	AWS_socket = tcp.TCPsocket()
 	AWS_socket.connect(TCP_IP, TCP_PORT)
@@ -83,3 +87,5 @@ if __name__ == '__main__':
 
 		if rec_count >= FILE_LIMIT:
 			cleanUpRecordings(rec_count)
+
+"""
