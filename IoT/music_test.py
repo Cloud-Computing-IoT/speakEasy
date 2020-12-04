@@ -45,6 +45,7 @@ if __name__ == '__main__':
 	# PATH = "/Users/matthewpisini/Desktop/DPunk.mp3"
 	# AWS_socket.sendFile(PATH)
 	music_child = MusicChild()
+	AWS_socket.sendMessage("Started music with song " + sample_music)
 
 	while True:
 		message = AWS_socket.receiveMessage()
