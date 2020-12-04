@@ -9,7 +9,6 @@ TCP_PORT = 5005
 HOME_DIREC = "/home/pi/"
 MUSIC_PATH = "/home/pi/{music}"
 OMXPLAYER_START = "delay: 0\r\n"
-RECORD_START = "Stereo\r\n"
 SONG1 = "mp3_test.mp3"
 SONG2 = "Lite_Weight.mp3"
 SONG3 = "24kGoldn.mp3"
@@ -17,6 +16,7 @@ RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_path}{file}.wav"
 VOLUME_UP = '='
 VOLUME_DOWN = '-'
 PAUSE = ' '
+FILE_LIMIT = 5
 
 class MusicChild:
 	def __init__(self, sample_music):
@@ -39,16 +39,19 @@ class RecordChild:
 	def __init__(self, record_time, file_name):
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
 		# this process will automatically terminate after it records for 'record_time'
+		# maybe add automatically sending the file and deleting it?
 
+#probably need to periodically clean up recordings or delete immediately after sending?
+def cleanUpRecordings(current_num):
+	for file in os.listdir(HOME_DIREC):
+		if ("rec" in file )and (str(current_num) not in file):
+			os.remove(os.path.join(HOME_DIREC, file))
 
 
 if __name__ == '__main__':
-
+	rec_count = 0 #adds number to file recorded
 	AWS_socket = tcp.TCPsocket()
 	AWS_socket.connect(TCP_IP, TCP_PORT)
-	# AWS_socket.sendFile(HOME_DIREC + "test.wav")
-	# PATH = "/Users/matthewpisini/Desktop/DPunk.mp3"
-	# AWS_socket.sendFile(PATH)
 	music_child = MusicChild(SONG2)
 	AWS_socket.sendMessage("Started music with song " + SONG2)
 
@@ -70,7 +73,13 @@ if __name__ == '__main__':
 			if message == " ":
 				AWS_socket.sendMessage("Paused music")
 		elif message.lower() == "record":
-			recording_child = RecordChild(5,"test")
+			recording_child = RecordChild(5,"rec{}".format(rec_count))
+			rec_count += 1
 			AWS_socket.sendMessage("Recording...")
+		elif message.lower() == "file":
+			AWS_socket.sendFile(HOME_DIREC + "rec{}".format(rec_count))
 		else:
 			AWS_socket.sendMessage("Not a command. Try again.")
+
+		if rec_count >= FILE_LIMIT:
+			cleanUpRecordings(rec_count)
