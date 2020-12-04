@@ -72,3 +72,5 @@ if __name__ == '__main__':
 		elif message.lower() == "record":
 			recording_child = RecordChild(5,"test")
 			AWS_socket.sendMessage("Recording...")
+		else:
+			AWS_socket.sendMessage("Not a command. Try again.")
