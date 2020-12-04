@@ -13,7 +13,7 @@ SONG1 = "mp3_test.mp3"
 SONG2 = "Lite_Weight.mp3"
 SONG3 = "24kGoldn.mp3"
 RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_path}{file}.wav"
-RECORD_COMMAND2 = "arecord -D hw:1,0 -f cd | nc 192.168.86.26 5005 < tail"
+RECORD_COMMAND2 = "arecord -D hw:1,0 -f cd tester.wav"
 VOLUME_UP = '='
 VOLUME_DOWN = '-'
 PAUSE = ' '
