@@ -10,14 +10,16 @@ HOME_DIREC = "/home/pi/"
 MUSIC_PATH = "/home/pi/{music}"
 OMXPLAYER_START = "delay: 0\r\n"
 RECORD_START = "Stereo\r\n"
-sample_music = "mp3_test.mp3"
+SONG1 = "mp3_test.mp3"
+SONG2 = "Lite_Weight.mp3"
+SONG3 = "24kGoldn.mp3"
 RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_path}{file}.wav"
 VOLUME_UP = '='
 VOLUME_DOWN = '-'
 PAUSE = ' '
 
 class MusicChild:
-	def __init__(self):
+	def __init__(self, sample_music):
 		self.child = pexpect.spawn('omxplayer ' + MUSIC_PATH.format(music = sample_music))
 		self.child.expect(OMXPLAYER_START)
 
@@ -47,8 +49,8 @@ if __name__ == '__main__':
 	# AWS_socket.sendFile(HOME_DIREC + "test.wav")
 	# PATH = "/Users/matthewpisini/Desktop/DPunk.mp3"
 	# AWS_socket.sendFile(PATH)
-	music_child = MusicChild()
-	AWS_socket.sendMessage("Started music with song " + sample_music)
+	music_child = MusicChild(SONG2)
+	AWS_socket.sendMessage("Started music with song " + SONG2)
 
 	while True:
 		message = AWS_socket.receiveMessage()

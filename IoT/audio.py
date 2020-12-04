@@ -3,6 +3,6 @@ import time
 
 
 c = m.MusicChild()
-r = m.RecordChild(15,"test")
+r = m.RecordChild(20,"Lite_Weight_no_voice")
 
-time.sleep(20)
+time.sleep(25)
