@@ -56,7 +56,8 @@ if __name__ == '__main__':
 			music_child.terminateProcess()
 			break
 		elif message == "=" or "-" or " ":
-			music_child.changeMusicOutput(message)
+			output = music_child.changeMusicOutput(message)
+			print(output)
 			if message == "=":
 				AWS_socket.sendMessage("Increased volume")
 			if message == "-":
