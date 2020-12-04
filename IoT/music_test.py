@@ -23,8 +23,11 @@ class MusicChild:
 
 	def changeMusicOutput(self, command):
 		self.child.send(command)
-		self.child.expect("\r\n")
-		output = self.child.before.decode()
+		if command = " ":
+			output = None
+		else: 
+			self.child.expect("\r\n")
+			output = self.child.before.decode()
 		return output
 
 	def terminateProcess(self):
