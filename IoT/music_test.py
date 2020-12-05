@@ -20,7 +20,7 @@ VOLUME_UP = '='
 VOLUME_DOWN = '-'
 PAUSE = ' '
 FILE_LIMIT = 5
-global FINISHED_RECORDING = 1
+FINISHED_RECORDING = 1
 
 class MusicChild:
 	def __init__(self, sample_music):
@@ -41,7 +41,7 @@ class MusicChild:
 
 class RecordChild:
 	def __init__(self, record_time, file_name):
-		FINISHED_RECORDING = 0
+		global FINISHED_RECORDING = 0
 		print("starting recording")
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
 		signal.signal(signal.SIGALRM, finished_recording)
@@ -52,7 +52,7 @@ class RecordChild:
 
 def finished_recording(signum, stack):
 	print("finished recording {}".format(rec_count))
-	FINISHED_RECORDING = 1
+	global FINISHED_RECORDING = 1
 
 #probably need to periodically clean up recordings or delete immediately after sending?
 def cleanUpRecordings(current_num):
