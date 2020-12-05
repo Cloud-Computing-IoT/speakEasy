@@ -57,6 +57,7 @@ if __name__ == '__main__':
 		recording_child = RecordChild(2,"rec{}".format(rec_count))
 		time.sleep(3)
 		rec_count += 1
+	cleanUpRecordings(rec_count)
 	"""
 	rec_count = 0 #adds number to file recorded
 	AWS_socket = tcp.TCPsocket()
