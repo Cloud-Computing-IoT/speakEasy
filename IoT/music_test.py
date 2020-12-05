@@ -1,5 +1,6 @@
 import os
 import time
+import sys
 import pexpect
 import TCP as tcp
 import signal
@@ -40,8 +41,8 @@ class MusicChild:
 
 class RecordChild:
 	def __init__(self, record_time, file_name):
-		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
 		FINISHED_RECORDING = 0
+		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
 		signal.signal(signal.SIGALRM, finished_recording)
 		signal.alarm(record_time)
 		
@@ -68,6 +69,8 @@ if __name__ == '__main__':
 	# 	rec_count += 1
 	# cleanUpRecordings(rec_count)
 	while True:
+		if rec_count >= 5:
+			sys.exit(1)
 		if FINISHED_RECORDING:
 			recording_child = RecordChild(2,"rec{}".format(rec_count))
 			rec_count += 1
