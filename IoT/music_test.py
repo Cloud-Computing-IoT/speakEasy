@@ -2,6 +2,7 @@ import os
 import time
 import pexpect
 import TCP as tcp
+import signal
 
 TCP_IP = "192.168.86.26"
 TCP_PORT = 5005
@@ -18,6 +19,7 @@ VOLUME_UP = '='
 VOLUME_DOWN = '-'
 PAUSE = ' '
 FILE_LIMIT = 5
+FINISHED_RECORDING = 1
 
 class MusicChild:
 	def __init__(self, sample_music):
@@ -39,9 +41,16 @@ class MusicChild:
 class RecordChild:
 	def __init__(self, record_time, file_name):
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
-		print("finished recording " + file_name)
+		FINISHED_RECORDING = 0
+		signal.signal(signal.SIGALRM, finished_recording)
+		signal.alarm(record_time)
+		
 		# this process will automatically terminate after it records for 'record_time'
 		# maybe add automatically sending the file and deleting it?
+
+def finished_recording(signum, stack):
+	print("finished recording " + rec_count)
+	FINISHED_RECORDING = 1
 
 #probably need to periodically clean up recordings or delete immediately after sending?
 def cleanUpRecordings(current_num):
@@ -49,15 +58,19 @@ def cleanUpRecordings(current_num):
 		if ("rec" in file )and (str(current_num) not in file):
 			os.remove(os.path.join(HOME_DIREC, file))
 
-
+rec_count = 0
 if __name__ == '__main__':
 	# recording_child = RecordChild(5,"rec{}".format(rec_count))
-	rec_count = 0
-	for i in range(5):
-		recording_child = RecordChild(2,"rec{}".format(rec_count))
-		time.sleep(3)
-		rec_count += 1
-	cleanUpRecordings(rec_count)
+	
+	# for i in range(5):
+	# 	recording_child = RecordChild(2,"rec{}".format(rec_count))
+	# 	time.sleep(3)
+	# 	rec_count += 1
+	# cleanUpRecordings(rec_count)
+	while True:
+		if FINISHED_RECORDING:
+			recording_child = RecordChild(2,"rec{}".format(rec_count))
+			rec_count += 1
 	"""
 	rec_count = 0 #adds number to file recorded
 	AWS_socket = tcp.TCPsocket()
