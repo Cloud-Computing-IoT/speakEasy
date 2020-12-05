@@ -21,7 +21,7 @@ VOLUME_DOWN = '-'
 PAUSE = ' '
 FILE_LIMIT = 5
 FINISHED_RECORDING = 1
-
+REC_COUNT = 0
 class MusicChild:
 	def __init__(self, sample_music):
 		self.child = pexpect.spawn('omxplayer ' + MUSIC_PATH.format(music = sample_music))
@@ -45,6 +45,7 @@ class RecordChild:
 		FINISHED_RECORDING = 0
 		print("starting recording")
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
+		#set interrupt for recording time
 		signal.signal(signal.SIGALRM, finished_recording)
 		signal.alarm(record_time)
 		
@@ -52,9 +53,13 @@ class RecordChild:
 		# maybe add automatically sending the file and deleting it?
 
 def finished_recording(signum, stack):
-	print("finished recording {}".format(rec_count))
+	print("finished recording {}".format(REC_COUNT))
+	#reset global --> ready for more recordings
 	global FINISHED_RECORDING
 	FINISHED_RECORDING = 1
+	#increment recording counter
+	global REC_COUNT
+	REC_COUNT += 1
 
 #probably need to periodically clean up recordings or delete immediately after sending?
 def cleanUpRecordings(current_num):
@@ -62,7 +67,7 @@ def cleanUpRecordings(current_num):
 		if ("rec" in file )and (str(current_num) not in file):
 			os.remove(os.path.join(HOME_DIREC, file))
 
-rec_count = 0
+
 if __name__ == '__main__':
 	# recording_child = RecordChild(5,"rec{}".format(rec_count))
 	
@@ -72,12 +77,11 @@ if __name__ == '__main__':
 	# 	rec_count += 1
 	# cleanUpRecordings(rec_count)
 	while True:
-		if rec_count >= 5:
+		if REC_COUNT >= 5:
 			sys.exit(1)
 		if FINISHED_RECORDING == 1:
-			print("rec: {}, state: {}".format(rec_count,FINISHED_RECORDING))
-			recording_child = RecordChild(2,"rec{}".format(rec_count))
-			rec_count += 1
+			print("rec: {}, state: {}".format(REC_COUNT,FINISHED_RECORDING))
+			recording_child = RecordChild(2,"rec{}".format(REC_COUNT))
 	"""
 	rec_count = 0 #adds number to file recorded
 	AWS_socket = tcp.TCPsocket()
