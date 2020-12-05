@@ -39,6 +39,7 @@ class MusicChild:
 class RecordChild:
 	def __init__(self, record_time, file_name):
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
+		print("finished recording " + file_name)
 		# this process will automatically terminate after it records for 'record_time'
 		# maybe add automatically sending the file and deleting it?
 
@@ -51,9 +52,11 @@ def cleanUpRecordings(current_num):
 
 if __name__ == '__main__':
 	# recording_child = RecordChild(5,"rec{}".format(rec_count))
-	recording_child = pexpect.spawn(RECORD_COMMAND2)
-	while True:
-		continue
+	rec_count = 0
+	for i in range(5):
+		recording_child = RecordChild(2,"rec{}".format(rec_count))
+		time.sleep(3)
+		rec_count += 1
 	"""
 	rec_count = 0 #adds number to file recorded
 	AWS_socket = tcp.TCPsocket()
