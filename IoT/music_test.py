@@ -42,6 +42,7 @@ class MusicChild:
 class RecordChild:
 	def __init__(self, record_time, file_name):
 		FINISHED_RECORDING = 0
+		print("starting recording")
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
 		signal.signal(signal.SIGALRM, finished_recording)
 		signal.alarm(record_time)
@@ -72,6 +73,7 @@ if __name__ == '__main__':
 		if rec_count >= 5:
 			sys.exit(1)
 		if FINISHED_RECORDING:
+			print(rec_count)
 			recording_child = RecordChild(2,"rec{}".format(rec_count))
 			rec_count += 1
 	"""
