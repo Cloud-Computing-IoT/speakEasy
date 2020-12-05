@@ -72,8 +72,8 @@ if __name__ == '__main__':
 	while True:
 		if rec_count >= 5:
 			sys.exit(1)
-		if FINISHED_RECORDING:
-			print(rec_count)
+		if FINISHED_RECORDING == 1:
+			print("rec: {}, state: {}".format(rec_count,FINISHED_RECORDING))
 			recording_child = RecordChild(2,"rec{}".format(rec_count))
 			rec_count += 1
 	"""
