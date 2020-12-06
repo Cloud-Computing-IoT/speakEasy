@@ -103,7 +103,7 @@ def startMusic(song_num):
 	music_child = MusicChild(SONG_LIST[SONG_NUM])
 	print("Starting music with song: {}".format(SONG_LIST[SONG_NUM]))
 	SONG_NUM += 1
-	if SONG_NUM > len(SONG_LIST):
+	if SONG_NUM >= len(SONG_LIST):
 		SONG_NUM = 0
 	return music_child
 		
