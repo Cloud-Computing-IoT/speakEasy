@@ -34,7 +34,7 @@ ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.0023590326309204
 
 class MusicChild:
 	def __init__(self, sample_music):
-		self.child = pexpect.spawn('omxplayer --vol -1800' + MUSIC_PATH.format(music = sample_music))
+		self.child = pexpect.spawn('omxplayer --vol -1800 ' + MUSIC_PATH.format(music = sample_music))
 		self.child.expect(OMXPLAYER_START)
 
 	def changeMusicOutput(self, command):
