@@ -56,15 +56,17 @@ class MusicChild:
 		self.child.close()
 
 class RecordChild:
-	def __init__(self, record_time, file_name):
+	def __init__(self, lock, record_time, file_name):
 		global FINISHED_RECORDING
-		FINISHED_RECORDING = 0
+		# FINISHED_RECORDING = 0
 		print("starting recording")
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
 		self.child.expect(pexpect.EOF)
 		global REC_COUNT, RECORD_QUEUE
 		print("finished recording {}".format(REC_COUNT))
+		lock.acquire()
 		RECORD_QUEUE.put("{}{}.wav".format(HOME_DIREC,file_name))
+		lock.release()
 		REC_COUNT += 1
 		FINISHED_RECORDING = 1
 		# this process will automatically terminate after it records for 'record_time'
@@ -165,6 +167,7 @@ if __name__ == '__main__':
 			if REC_COUNT >= FILE_LIMIT:
 					cleanUpRecordings(REC_COUNT)
 			#create thread which will handle the recording subprocess
-			x = spawnThread(RecordChild,[command_lock, record_lock],[RECORDING_LENGTH,"rec{}".format(REC_COUNT)] )
+			FINISHED_RECORDING = 0
+			x = spawnThread(RecordChild,[record_lock],[RECORDING_LENGTH,"rec{}".format(REC_COUNT)] )
 			# x = threading.Thread(target=RecordChild, args=(RECORDING_LENGTH,"rec{}".format(REC_COUNT)))
 			# x.start()
