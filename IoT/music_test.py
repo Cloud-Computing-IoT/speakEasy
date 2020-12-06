@@ -82,20 +82,24 @@ def cleanUpRecordings(current_num):
 			os.remove(os.path.join(HOME_DIREC, file))
 
 def controlInterface(lock):
-	AWS_socket = tcp.TCPsocket()
-	AWS_socket.connect(TCP_IP, TCP_PORT)
-	while True:
-		message = AWS_socket.receiveMessage()
-		AWS_socket.sendMessage("Received: " + message)
-		if message.lower() == "stop":
-			AWS_socket.closeSocket()
-			break
-		elif message.lower() == "file":
-			AWS_socket.sendFile(RECORD_QUEUE.get())
-		else:
-			lock.acquire()
-			COMMAND_QUEUE.put(message)
-			lock.release()
+	try:
+		AWS_socket = tcp.TCPsocket()
+		AWS_socket.connect(TCP_IP, TCP_PORT)
+		while True:
+			message = AWS_socket.receiveMessage()
+			if message.lower() == "stop":
+				AWS_socket.sendMessage("Received: " + message)
+				AWS_socket.closeSocket()
+				break
+			elif message.lower() == "file":
+				AWS_socket.sendFile(RECORD_QUEUE.get())
+			else:
+				AWS_socket.sendMessage("Received: " + message)
+				lock.acquire()
+				COMMAND_QUEUE.put(message)
+				lock.release()
+	except:
+		print("Lost connection to AWS")
 		
 
 def startMusic(song_num):

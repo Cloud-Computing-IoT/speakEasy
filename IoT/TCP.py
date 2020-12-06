@@ -95,6 +95,7 @@ class TCPsocket:
         while(data):
             f.write(data)
             data = self.s.recv(BUFFER_SIZE)
+        f.close()
 
     def closeSocket(self):
         self.s.close()

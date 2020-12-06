@@ -15,14 +15,18 @@ sock.listen(tcp.socket.gethostname(),LISTEN_PORT)
 
 # sock.sendMessage("What you need?")
 # sock.receiveFile(FILE_PATH)
-message = input("What do you want to send: ")
-sock.sendMessage(message)
+# message = input("What do you want to send: ")
+# sock.sendMessage(message)
 while True:
-    data = sock.receiveMessage()
-    print(data)
-    if "Terminating" in data:
-        sock.closeSocket()
-        print("Finished listening")
-        sys.exit(1)
     message = input("What do you want to send: ")
     sock.sendMessage(message)
+    if message == "file":
+        sock.receiveFile("/Users/matthewpisini/Desktop/dummy.txt")
+    else:
+        data = sock.receiveMessage()
+        print(data)
+        if "Terminating" in data:
+            sock.closeSocket()
+            print("Finished listening")
+            sys.exit(1)
+    
