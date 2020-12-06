@@ -18,9 +18,11 @@ TCP_PORT = 5005
 HOME_DIREC = "/home/pi/"
 MUSIC_PATH = "/home/pi/{music}"
 OMXPLAYER_START = "delay: 0\r\n"
-SONG1 = "mp3_test.mp3"
-SONG2 = "Lite_Weight.mp3"
-SONG3 = "24kGoldn.mp3"
+SONG0 = "mp3_test.mp3"
+SONG1 = "Lite_Weight.mp3"
+SONG2 = "24kGoldn.mp3"
+SONG_LIST = [SONG0, SONG1, SONG2]
+SONG_NUM = 0
 RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_path}{file}.wav"
 RECORD_COMMAND2 = "arecord -D hw:1,0 -f cd tester.wav"
 VOLUME_UP = '='
@@ -83,12 +85,17 @@ def controlInterface(lock):
 		lock.release()
 
 
-
+def startMusic(song_num):
+	global SONG_NUM
+	music_child = MusicChild(SONG_LIST[SONG_NUM])
+	print("Starting music with song: {}".format(SONG_LIST[SONG_NUM]))
+	SONG_NUM += 1
+	return music_child
 		
 
 
 if __name__ == '__main__':
-	music_child = MusicChild(SONG2)
+	music_child = startMusic(SONG_NUM)
 
 	command_lock = threading.Lock()
 	command_thread = threading.Thread(target=controlInterface, args=(command_lock,))
@@ -117,9 +124,13 @@ if __name__ == '__main__':
 			command_lock.acquire()
 			message = COMMAND_QUEUE.get()
 			command_lock.release()
-			if message == "stop":
+			if message.lower() == "stop":
 				music_child.terminateProcess()
+				sys.exit(1)
 				break
+			elif message.lower() == "next":
+				music_child.terminateProcess()
+				music_child = startMusic(SONG_NUM)
 			elif message == "=" or "-" or " ":
 				output = music_child.changeMusicOutput(message)
 				print(output)
