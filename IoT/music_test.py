@@ -71,8 +71,8 @@ class RecordChild:
 		# maybe add automatically sending the file and deleting it?
 
 class spawnThread:
-	def __init__(self, function, lock):
-		self.thread = threading.Thread(target=function, args=(lock,))
+	def __init__(self, function, lock, params = None ):
+		self.thread = threading.Thread(target=function, args=(lock,params,))
 		self.thread.start()
 
 #probably need to periodically clean up recordings or delete immediately after sending?
@@ -81,7 +81,7 @@ def cleanUpRecordings(current_num):
 		if ("rec" in file )and (str(current_num) not in file):
 			os.remove(os.path.join(HOME_DIREC, file))
 
-def controlInterface(lock):
+def controlInterface(command_lock, record_lock):
 	try:
 		AWS_socket = tcp.TCPsocket()
 		AWS_socket.connect(TCP_IP, TCP_PORT)
@@ -91,9 +91,9 @@ def controlInterface(lock):
 				AWS_socket.sendFile(RECORD_QUEUE.get())
 			else:
 				AWS_socket.sendMessage("Received: " + message)
-				lock.acquire()
+				command_lock.acquire()
 				COMMAND_QUEUE.put(message)
-				lock.release()
+				command_lock.release()
 				if message.lower() == "stop":
 					AWS_socket.closeSocket()
 					break
@@ -116,8 +116,9 @@ if __name__ == '__main__':
 	music_child = startMusic(SONG_NUM)
 
 	command_lock = threading.Lock()
-	command_thread = spawnThread(controlInterface, command_lock)
-	RECORD_QUEUE.put("/home/pi/dummy.txt")
+	record_lock = threading.Lock()
+	command_thread = spawnThread(controlInterface, [command_lock, record_lock])
+	# RECORD_QUEUE.put("/home/pi/dummy.txt")
 	# command_thread = threading.Thread(target=controlInterface, args=(command_lock,))
 	# command_thread.start()
 	# AWS_socket.sendMessage("Started music with song " + SONG2)
@@ -160,3 +161,10 @@ if __name__ == '__main__':
 			# 	AWS_socket.sendFile(HOME_DIREC + "rec{}".format(rec_count))
 			# else:
 			# 	AWS_socket.sendMessage("Not a command. Try again.")
+		if FINISHED_RECORDING == 1:
+			if REC_COUNT >= FILE_LIMIT:
+					cleanUpRecordings(REC_COUNT)
+			#create thread which will handle the recording subprocess
+			x = spawnThread(RecordChild,[command_lock, record_lock],[RECORDING_LENGTH,"rec{}".format(REC_COUNT)] )
+			# x = threading.Thread(target=RecordChild, args=(RECORDING_LENGTH,"rec{}".format(REC_COUNT)))
+			# x.start()
