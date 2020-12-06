@@ -4,6 +4,7 @@ import sys
 import pexpect
 import TCP as tcp
 import signal
+import threading
 
 TCP_IP = "192.168.86.26"
 TCP_PORT = 5005
@@ -90,7 +91,9 @@ if __name__ == '__main__':
 			sys.exit(1)
 		if FINISHED_RECORDING == 1:
 			print("rec: {}, state: {}".format(REC_COUNT,FINISHED_RECORDING))
-			recording_child = RecordChild(2,"rec{}".format(REC_COUNT))
+			x = threading.Thread(target=RecordChild, args=(2,"rec{}".format(REC_COUNT)))
+			x.start()
+			# recording_child = RecordChild(2,"rec{}".format(REC_COUNT))
 		print("hello")
 	"""
 	rec_count = 0 #adds number to file recorded
