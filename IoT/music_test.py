@@ -74,8 +74,9 @@ class RecordChild:
 
 class spawnThread:
 	def __init__(self, function, lock, params = None ):
-		print(params)
-		self.thread = threading.Thread(target=function, args=(lock,params))
+		input = lock + params
+		print(input)
+		self.thread = threading.Thread(target=function, args=(input))
 		self.thread.start()
 
 #probably need to periodically clean up recordings or delete immediately after sending?
