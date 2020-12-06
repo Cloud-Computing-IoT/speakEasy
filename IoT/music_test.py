@@ -68,6 +68,8 @@ class RecordChild:
 		RECORD_QUEUE.put("{}{}.wav".format(HOME_DIREC,file_name))
 		lock.release()
 		REC_COUNT += 1
+		if REC_COUNT >= FILE_LIMIT:
+			cleanUpRecordings(REC_COUNT-FILE_LIMIT)
 		FINISHED_RECORDING = 1
 		# this process will automatically terminate after it records for 'record_time'
 		# maybe add automatically sending the file and deleting it?
