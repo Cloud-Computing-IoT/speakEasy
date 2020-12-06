@@ -73,10 +73,9 @@ class RecordChild:
 		# maybe add automatically sending the file and deleting it?
 
 class spawnThread:
-	def __init__(self, function, lock, params = None ):
-		input = lock + params
-		print(input)
-		self.thread = threading.Thread(target=function, args=(input))
+	def __init__(self, function, lock, *args ):
+		print(args)
+		self.thread = threading.Thread(target=function, args=(lock,args))
 		self.thread.start()
 
 #probably need to periodically clean up recordings or delete immediately after sending?
