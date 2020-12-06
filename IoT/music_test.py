@@ -87,17 +87,16 @@ def controlInterface(lock):
 		AWS_socket.connect(TCP_IP, TCP_PORT)
 		while True:
 			message = AWS_socket.receiveMessage()
-			if message.lower() == "stop":
-				AWS_socket.sendMessage("Received: " + message)
-				AWS_socket.closeSocket()
-				break
-			elif message.lower() == "file":
+			if message.lower() == "file":
 				AWS_socket.sendFile(RECORD_QUEUE.get())
 			else:
 				AWS_socket.sendMessage("Received: " + message)
 				lock.acquire()
 				COMMAND_QUEUE.put(message)
 				lock.release()
+				if message.lower() == "stop":
+					AWS_socket.closeSocket()
+					break
 	except:
 		print("Lost connection to AWS")
 		

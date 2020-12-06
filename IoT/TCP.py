@@ -50,6 +50,8 @@ class TCPserver:
         data = self.child_sock.recv(BUFFER_SIZE)
         while(data):
             f.write(data)
+            if len(data) < BUFFER_SIZE:
+                break
             data = self.child_sock.recv(BUFFER_SIZE)
         f.close()
         print("Finished receiving file " + filePath)
@@ -94,6 +96,8 @@ class TCPsocket:
         data = self.s.recv(BUFFER_SIZE)
         while(data):
             f.write(data)
+            if len(data) < BUFFER_SIZE:
+                break
             data = self.s.recv(BUFFER_SIZE)
         f.close()
 
