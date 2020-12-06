@@ -111,10 +111,10 @@ def commandControlInterface():
 if __name__ == '__main__':
 
 	music_child = MusicChild(SONG2)
-	print(music_child)
+	print(music_child.child.isalive())
 	time.sleep(5)
 	music_child.terminateProcess()
-	print(music_child)
+	print(music_child.child.isalive())
 	# controller = threading.Thread(target=commandControlInterface())
 	# controller.start()
 	# while True:
