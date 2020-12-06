@@ -98,7 +98,7 @@ class spawnThread:
 			ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0) 
 			print('Exception raise failure')
 		else:
-			print("closing thread " + thread_id)
+			print("closing thread " + str(thread_id))
 
 	def get_id(self): 
         # returns id of the respective thread 
