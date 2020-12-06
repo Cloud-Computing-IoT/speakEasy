@@ -53,13 +53,14 @@ class RecordChild:
 		# maybe add automatically sending the file and deleting it?
 
 def finished_recording(signum, stack):
-	#reset global --> ready for more recordings
-	global FINISHED_RECORDING
-	FINISHED_RECORDING = 1
 	#increment recording counter
 	global REC_COUNT
 	print("finished recording {}".format(REC_COUNT))
 	REC_COUNT += 1
+	#reset global --> ready for more recordings
+	global FINISHED_RECORDING
+	FINISHED_RECORDING = 1
+	
 
 #probably need to periodically clean up recordings or delete immediately after sending?
 def cleanUpRecordings(current_num):
