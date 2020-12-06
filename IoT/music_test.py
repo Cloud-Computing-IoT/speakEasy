@@ -112,6 +112,7 @@ if __name__ == '__main__':
 
 	music_child = MusicChild(SONG2)
 	print(music_child)
+	time.sleep(5)
 	music_child.terminateProcess()
 	print(music_child)
 	# controller = threading.Thread(target=commandControlInterface())
