@@ -3,7 +3,6 @@ import time
 import sys
 import pexpect
 import TCP as tcp
-import signal
 import threading
 
 TCP_IP = "192.168.86.26"
@@ -51,20 +50,17 @@ class RecordChild:
 		print("starting recording")
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
 		self.child.expect(pexpect.EOF)
-		FINISHED_RECORDING = 1
 		global REC_COUNT
+		print("finished recording {}".format(REC_COUNT))
 		REC_COUNT += 1
-		#set interrupt for recording time
-		# signal.signal(signal.SIGALRM, finished_recording)
-		# signal.alarm(record_time)
-		
+		FINISHED_RECORDING = 1
 		# this process will automatically terminate after it records for 'record_time'
 		# maybe add automatically sending the file and deleting it?
 
 def finished_recording(signum, stack):
 	#increment recording counter
 	global REC_COUNT
-	print("finished recording {}".format(REC_COUNT))
+	
 	REC_COUNT += 1
 	#reset global --> ready for more recordings
 	global FINISHED_RECORDING
@@ -94,7 +90,7 @@ if __name__ == '__main__':
 			x = threading.Thread(target=RecordChild, args=(2,"rec{}".format(REC_COUNT)))
 			x.start()
 			# recording_child = RecordChild(2,"rec{}".format(REC_COUNT))
-		print("hello")
+		# print("hello")
 	"""
 	rec_count = 0 #adds number to file recorded
 	AWS_socket = tcp.TCPsocket()
