@@ -83,7 +83,8 @@ class spawnThread:
 #probably need to periodically clean up recordings or delete immediately after sending?
 def cleanUpRecordings(current_num):
 	for file in os.listdir(HOME_DIREC):
-		if ("rec" in file )and (str(current_num) not in file):
+		# if ("rec" in file ) and (str(current_num) not in file):
+		if "rec{}".format(current_num) in file:
 			os.remove(os.path.join(HOME_DIREC, file))
 
 def controlInterface(command_lock, record_lock):
