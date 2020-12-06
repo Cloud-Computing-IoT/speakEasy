@@ -152,7 +152,7 @@ if __name__ == '__main__':
 			if message.lower() == "stop":
 				music_child.terminateProcess()
 				# command_thread.raise_exception()
-				command_thread.thread.join()
+				command_thread.join()
 				print("Shutting down execution...")
 				sys.exit(1)
 			elif message.lower() == "next":
@@ -167,8 +167,8 @@ if __name__ == '__main__':
 			# else:
 			# 	AWS_socket.sendMessage("Not a command. Try again.")
 		if FINISHED_RECORDING == 1:
-			if REC_COUNT >= FILE_LIMIT:
-					cleanUpRecordings(REC_COUNT)
+			# if REC_COUNT >= FILE_LIMIT:
+			# 		cleanUpRecordings(REC_COUNT)
 			#create thread which will handle the recording subprocess
 			FINISHED_RECORDING = 0
 			# x = spawnThread(RecordChild,lock=[record_lock],params=[RECORDING_LENGTH,"rec{}".format(REC_COUNT)] )
