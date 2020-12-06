@@ -15,6 +15,8 @@ sock.listen(tcp.socket.gethostname(),LISTEN_PORT)
 
 # sock.sendMessage("What you need?")
 # sock.receiveFile(FILE_PATH)
+message = input("What do you want to send: ")
+sock.sendMessage(message)
 while True:
     data = sock.receiveMessage()
     print(data)
