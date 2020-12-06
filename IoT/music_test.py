@@ -76,17 +76,17 @@ def cleanUpRecordings(current_num):
 			os.remove(os.path.join(HOME_DIREC, file))
 
 def controlInterface(lock):
-	try:
-		AWS_socket = tcp.TCPsocket()
-		AWS_socket.connect(TCP_IP, TCP_PORT)
-		while True:
-			message = AWS_socket.receiveMessage()
-			AWS_socket.sendMessage("Received: " + message)
-			lock.acquire()
-			COMMAND_QUEUE.put(message)
-			lock.release()
-	finally:
-		AWS_socket.closeSocket()
+	AWS_socket = tcp.TCPsocket()
+	AWS_socket.connect(TCP_IP, TCP_PORT)
+	while True:
+		message = AWS_socket.receiveMessage()
+		AWS_socket.sendMessage("Received: " + message)
+		lock.acquire()
+		COMMAND_QUEUE.put(message)
+		lock.release()
+		if message.lower() == "stop":
+			AWS_socket.closeSocket()
+			break
 
 class spawnThread:
 	def __init__(self, function, lock):
@@ -153,7 +153,7 @@ if __name__ == '__main__':
 			command_lock.release()
 			if message.lower() == "stop":
 				music_child.terminateProcess()
-				command_thread.raise_exception()
+				# command_thread.raise_exception()
 				command_thread.thread.join()
 				sys.exit(1)
 				break
