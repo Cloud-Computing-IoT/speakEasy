@@ -4,6 +4,7 @@ import sys
 import pexpect
 import TCP as tcp
 import threading
+import ctypes
 from queue import Queue
 
 """
@@ -84,6 +85,28 @@ def controlInterface(lock):
 		COMMAND_QUEUE.put(message)
 		lock.release()
 
+class spawnThread:
+	def __init__(self, function, lock):
+		self.thread = threading.Thread(target=function, args=(lock,))
+		self.thread.start()
+
+	def raise_exception(self): 
+		thread_id = self.get_id() 
+		res = ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 
+				ctypes.py_object(SystemExit)) 
+		if res > 1: 
+			ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0) 
+			print('Exception raise failure')
+		else:
+			print("closing thread " + thread_id)
+
+	def get_id(self): 
+        # returns id of the respective thread 
+		# if hasattr(self, '_thread_id'): 
+		# 	return self._thread_id 
+		for id, thread in threading._active.items(): 
+			if thread is self: 
+				return id
 
 def startMusic(song_num):
 	global SONG_NUM
@@ -98,8 +121,9 @@ if __name__ == '__main__':
 	music_child = startMusic(SONG_NUM)
 
 	command_lock = threading.Lock()
-	command_thread = threading.Thread(target=controlInterface, args=(command_lock,))
-	command_thread.start()
+	command_thread = spawnThread(controlInterface, command_lock)
+	# command_thread = threading.Thread(target=controlInterface, args=(command_lock,))
+	# command_thread.start()
 	# AWS_socket.sendMessage("Started music with song " + SONG2)
 	# controller = threading.Thread(target=musicControlInterface())
 	# controller.start()
@@ -126,6 +150,8 @@ if __name__ == '__main__':
 			command_lock.release()
 			if message.lower() == "stop":
 				music_child.terminateProcess()
+				command_thread.raise_exception()
+				command_thread.thread.join()
 				sys.exit(1)
 				break
 			elif message.lower() == "next":
