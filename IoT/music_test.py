@@ -120,7 +120,9 @@ if __name__ == '__main__':
 
 	command_lock = threading.Lock()
 	record_lock = threading.Lock()
-	command_thread = spawnThread(controlInterface, [command_lock, record_lock])
+	# command_thread = spawnThread(controlInterface, [command_lock, record_lock])
+	command_thread = threading.Thread(target=controlInterface, args=(command_lock, record_lock))
+	command_thread.start()
 	# RECORD_QUEUE.put("/home/pi/dummy.txt")
 	# command_thread = threading.Thread(target=controlInterface, args=(command_lock,))
 	# command_thread.start()
@@ -169,6 +171,6 @@ if __name__ == '__main__':
 					cleanUpRecordings(REC_COUNT)
 			#create thread which will handle the recording subprocess
 			FINISHED_RECORDING = 0
-			x = spawnThread(RecordChild,lock=[record_lock],params=[RECORDING_LENGTH,"rec{}".format(REC_COUNT)] )
-			# x = threading.Thread(target=RecordChild, args=(RECORDING_LENGTH,"rec{}".format(REC_COUNT)))
-			# x.start()
+			# x = spawnThread(RecordChild,lock=[record_lock],params=[RECORDING_LENGTH,"rec{}".format(REC_COUNT)] )
+			x = threading.Thread(target=RecordChild, args=(record_lock, RECORDING_LENGTH,"rec{}".format(REC_COUNT)))
+			x.start()
