@@ -76,14 +76,17 @@ def cleanUpRecordings(current_num):
 			os.remove(os.path.join(HOME_DIREC, file))
 
 def controlInterface(lock):
-	AWS_socket = tcp.TCPsocket()
-	AWS_socket.connect(TCP_IP, TCP_PORT)
-	while True:
-		message = AWS_socket.receiveMessage()
-		AWS_socket.sendMessage("Received: " + message)
-		lock.acquire()
-		COMMAND_QUEUE.put(message)
-		lock.release()
+	try:
+		AWS_socket = tcp.TCPsocket()
+		AWS_socket.connect(TCP_IP, TCP_PORT)
+		while True:
+			message = AWS_socket.receiveMessage()
+			AWS_socket.sendMessage("Received: " + message)
+			lock.acquire()
+			COMMAND_QUEUE.put(message)
+			lock.release()
+	finally:
+		AWS_socket.closeSocket()
 
 class spawnThread:
 	def __init__(self, function, lock):
