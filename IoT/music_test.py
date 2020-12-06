@@ -51,6 +51,8 @@ class RecordChild:
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
 		self.child.expect(pexpect.EOF)
 		FINISHED_RECORDING = 1
+		global REC_COUNT
+		REC_COUNT += 1
 		#set interrupt for recording time
 		# signal.signal(signal.SIGALRM, finished_recording)
 		# signal.alarm(record_time)
