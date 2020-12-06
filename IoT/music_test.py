@@ -22,6 +22,10 @@ PAUSE = ' '
 FILE_LIMIT = 5
 FINISHED_RECORDING = 1
 REC_COUNT = 0
+ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.00235903263092041,      0.002854257822036743,      1.02996826171875E-4    ]  }}'
+
+
+
 class MusicChild:
 	def __init__(self, sample_music):
 		self.child = pexpect.spawn('omxplayer ' + MUSIC_PATH.format(music = sample_music))
@@ -45,9 +49,11 @@ class RecordChild:
 		FINISHED_RECORDING = 0
 		print("starting recording")
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
+		self.child.expect(pexpect.EOF)
+		FINISHED_RECORDING = 1
 		#set interrupt for recording time
-		signal.signal(signal.SIGALRM, finished_recording)
-		signal.alarm(record_time)
+		# signal.signal(signal.SIGALRM, finished_recording)
+		# signal.alarm(record_time)
 		
 		# this process will automatically terminate after it records for 'record_time'
 		# maybe add automatically sending the file and deleting it?
