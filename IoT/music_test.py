@@ -91,6 +91,8 @@ if __name__ == '__main__':
 		if FINISHED_RECORDING == 1:
 			print("rec: {}, state: {}".format(REC_COUNT,FINISHED_RECORDING))
 			recording_child = RecordChild(2,"rec{}".format(REC_COUNT))
+		else:
+			print("hello")
 	"""
 	rec_count = 0 #adds number to file recorded
 	AWS_socket = tcp.TCPsocket()
