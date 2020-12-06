@@ -4,7 +4,12 @@ import sys
 import pexpect
 import TCP as tcp
 import threading
-
+"""
+arrow-up:      ^[[A
+arrow-down:    ^[[B
+arrow-right:   ^[[C
+arrow-left:    ^[[D
+"""
 TCP_IP = "192.168.86.26"
 TCP_PORT = 5005
 
@@ -21,6 +26,7 @@ VOLUME_DOWN = '-'
 PAUSE = ' '
 FILE_LIMIT = 5
 FINISHED_RECORDING = 1
+RECORDING_LENGTH = 2
 REC_COUNT = 0
 ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.00235903263092041,      0.002854257822036743,      1.02996826171875E-4    ]  }}'
 
@@ -28,7 +34,7 @@ ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.0023590326309204
 
 class MusicChild:
 	def __init__(self, sample_music):
-		self.child = pexpect.spawn('omxplayer ' + MUSIC_PATH.format(music = sample_music))
+		self.child = pexpect.spawn('omxplayer --vol -1800' + MUSIC_PATH.format(music = sample_music))
 		self.child.expect(OMXPLAYER_START)
 
 	def changeMusicOutput(self, command):
@@ -56,15 +62,6 @@ class RecordChild:
 		FINISHED_RECORDING = 1
 		# this process will automatically terminate after it records for 'record_time'
 		# maybe add automatically sending the file and deleting it?
-
-def finished_recording(signum, stack):
-	#increment recording counter
-	global REC_COUNT
-	
-	REC_COUNT += 1
-	#reset global --> ready for more recordings
-	global FINISHED_RECORDING
-	FINISHED_RECORDING = 1
 	
 
 #probably need to periodically clean up recordings or delete immediately after sending?
@@ -73,26 +70,7 @@ def cleanUpRecordings(current_num):
 		if ("rec" in file )and (str(current_num) not in file):
 			os.remove(os.path.join(HOME_DIREC, file))
 
-
-if __name__ == '__main__':
-	# recording_child = RecordChild(5,"rec{}".format(rec_count))
-	
-	# for i in range(5):
-	# 	recording_child = RecordChild(2,"rec{}".format(rec_count))
-	# 	time.sleep(3)
-	# 	rec_count += 1
-	# cleanUpRecordings(rec_count)
-	while True:
-		if REC_COUNT >= 5:
-			sys.exit(1)
-		if FINISHED_RECORDING == 1:
-			print("rec: {}, state: {}".format(REC_COUNT,FINISHED_RECORDING))
-			x = threading.Thread(target=RecordChild, args=(2,"rec{}".format(REC_COUNT)))
-			x.start()
-			# recording_child = RecordChild(2,"rec{}".format(REC_COUNT))
-		# print("hello")
-	"""
-	rec_count = 0 #adds number to file recorded
+def commandControlInterface():
 	AWS_socket = tcp.TCPsocket()
 	AWS_socket.connect(TCP_IP, TCP_PORT)
 	music_child = MusicChild(SONG2)
@@ -101,6 +79,7 @@ if __name__ == '__main__':
 	while True:
 		message = AWS_socket.receiveMessage()
 		print(message)
+		# if music_child
 		if message == "stop":
 			AWS_socket.sendMessage("Terminating program now.")
 			AWS_socket.closeSocket()
@@ -115,10 +94,11 @@ if __name__ == '__main__':
 				AWS_socket.sendMessage("Decreased volume")
 			if message == " ":
 				AWS_socket.sendMessage("Paused music")
-		elif message.lower() == "record":
-			recording_child = RecordChild(5,"rec{}".format(rec_count))
-			rec_count += 1
-			AWS_socket.sendMessage("Recording...")
+		#think we will handle recording automatically
+		# elif message.lower() == "record":
+		# 	recording_child = RecordChild(5,"rec{}".format(rec_count))
+		# 	rec_count += 1
+		# 	AWS_socket.sendMessage("Recording...")
 		elif message.lower() == "file":
 			AWS_socket.sendFile(HOME_DIREC + "rec{}".format(rec_count))
 		else:
@@ -127,4 +107,21 @@ if __name__ == '__main__':
 		if rec_count >= FILE_LIMIT:
 			cleanUpRecordings(rec_count)
 
-"""
+
+if __name__ == '__main__':
+
+	music_child = MusicChild(SONG2)
+	print(music_child)
+	music_child.terminateProcess()
+	print(music_child)
+	# controller = threading.Thread(target=commandControlInterface())
+	# controller.start()
+	# while True:
+	# 	if REC_COUNT >= 5:
+	# 		sys.exit(1)
+	# 	#creates recording
+	# 	if FINISHED_RECORDING == 1:
+	# 		print("rec: {}, state: {}".format(REC_COUNT,FINISHED_RECORDING))
+	# 		#create thread which will handle the recording subprocess
+	# 		x = threading.Thread(target=RecordChild, args=(RECORDING_LENGTH,"rec{}".format(REC_COUNT)))
+	# 		x.start()
