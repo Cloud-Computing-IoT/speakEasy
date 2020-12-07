@@ -14,7 +14,7 @@
 """Provides readers configured for different datasets."""
 
 import tensorflow as tf
-from classifier import utils
+from audio_analyzer.classifier import utils
 
 
 def resize_axis(tensor, axis, new_size, fill_value=0):

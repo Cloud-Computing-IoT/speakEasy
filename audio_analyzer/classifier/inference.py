@@ -26,7 +26,9 @@ import tempfile
 import time
 import numpy as np
 
-from classifier import readers
+from audio_analyzer.classifier import readers
+from audio_analyzer.classifier import utils
+
 from six.moves import urllib
 import tensorflow as tf
 from tensorflow import app
@@ -34,7 +36,6 @@ from tensorflow import flags
 from tensorflow import gfile
 from tensorflow import logging
 from tensorflow.python.lib.io import file_io
-from classifier import utils
 
 FLAGS = flags.FLAGS
 
