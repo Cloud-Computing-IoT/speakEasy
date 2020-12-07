@@ -11,12 +11,13 @@ import subprocess
 import pathlib
 import os
 
-from classifier import inference
+from audio_analyzer.classifier import inference
 
 def run(input_filename):
     proj_dir = pathlib.Path(__file__).parent.absolute()
+
     # Feature extraction
-    subprocess.run(['feature_extraction/vggish_inference_demo.py',
+    subprocess.run([os.path.join(proj_dir, 'feature_extraction/vggish_inference_demo.py'),
                     '--wav_file', os.path.join(proj_dir, input_filename),
                     '--tfrecord_file', 'extracted_features.tfrecord',
                     '--pca_params', os.path.join(proj_dir, 'feature_extraction/vggish_pca_params.npz'),
