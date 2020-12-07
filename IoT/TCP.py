@@ -5,7 +5,6 @@ import threading
 
 BUFFER_SIZE = 1024
 FILE_READ_SIZE = 1024
-NUM_CONN = 5
 
 
 """
