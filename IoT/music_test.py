@@ -29,6 +29,8 @@ RECORD_COMMAND2 = "arecord -D hw:1,0 -f cd tester.wav"
 VOLUME_UP = '='
 VOLUME_DOWN = '-'
 PAUSE = ' '
+NEXT = "next"
+COMMANDS = [VOLUME_DOWN, VOLUME_UP, PAUSE, NEXT]
 FILE_LIMIT = 5
 FINISHED_RECORDING = 1
 RECORDING_LENGTH = 2
@@ -70,15 +72,16 @@ class RecordChild:
 		REC_COUNT += 1
 		if REC_COUNT >= FILE_LIMIT:
 			cleanUpRecordings(REC_COUNT-FILE_LIMIT)
+			#add how to delete the names off the RECORD_QUEUE
 		FINISHED_RECORDING = 1
 		# this process will automatically terminate after it records for 'record_time'
 		# maybe add automatically sending the file and deleting it?
 
-class spawnThread:
-	def __init__(self, function, lock, params = None ):
-		print((lock,params))
-		self.thread = threading.Thread(target=function, args=(lock,params))
-		self.thread.start()
+# class spawnThread:
+# 	def __init__(self, function, lock, params = None ):
+# 		print((lock,params))
+# 		self.thread = threading.Thread(target=function, args=(lock,params))
+# 		self.thread.start()
 
 #probably need to periodically clean up recordings or delete immediately after sending?
 def cleanUpRecordings(current_num):
@@ -94,8 +97,10 @@ def controlInterface(command_lock, record_lock):
 		while True:
 			message = AWS_socket.receiveMessage()
 			if message.lower() == "file":
+				record_lock.acquire()
 				AWS_socket.sendFile(RECORD_QUEUE.get())
-			else:
+				record_lock.release()
+			elif message in COMMANDS:
 				AWS_socket.sendMessage("Received: " + message)
 				command_lock.acquire()
 				COMMAND_QUEUE.put(message)
@@ -103,6 +108,8 @@ def controlInterface(command_lock, record_lock):
 				if message.lower() == "stop":
 					AWS_socket.closeSocket()
 					break
+			else:
+				AWS_socket.sendMessage("Invalid command: " + message)
 	except:
 		print("Lost connection to AWS")
 		
