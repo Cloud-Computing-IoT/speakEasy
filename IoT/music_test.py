@@ -13,31 +13,44 @@ arrow-down:    ^[[B
 arrow-right:   ^[[C
 arrow-left:    ^[[D
 """
+HOME_DIREC = "/home/pi/"
+
+""" ******************** TCP GLOBALS ******************** """
 TCP_IP = "192.168.86.26"
 TCP_PORT = 5005
+""" ************************v**************************** """
 
-HOME_DIREC = "/home/pi/"
+""" ******************** SONG GLOBALS ******************** """
 MUSIC_PATH = "/home/pi/{music}"
-OMXPLAYER_START = "delay: 0\r\n"
 SONG0 = "mp3_test.mp3"
 SONG1 = "Lite_Weight.mp3"
 SONG2 = "24kGoldn.mp3"
 SONG_LIST = [SONG0, SONG1, SONG2]
 SONG_NUM = 0
+""" ******************************************************* """
+
+""" ******************** RECORDING GLOBALS ******************** """
 RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_path}{file}.wav"
 RECORD_COMMAND2 = "arecord -D hw:1,0 -f cd tester.wav"
-VOLUME_UP = '='
-VOLUME_DOWN = '-'
-PAUSE = ' '
-NEXT = "next"
-COMMANDS = [VOLUME_DOWN, VOLUME_UP, PAUSE, NEXT]
 FILE_LIMIT = 5
 FINISHED_RECORDING = 1
 RECORDING_LENGTH = 2
 REC_COUNT = 0
-ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.00235903263092041,      0.002854257822036743,      1.02996826171875E-4    ]  }}'
-COMMAND_QUEUE = Queue()
 RECORD_QUEUE = Queue()
+""" *********************************************************** """
+
+""" ******************** MUSIC/COMMAND GLOBALS ******************** """
+OMXPLAYER_START = "delay: 0\r\n"
+VOLUME_UP = '='
+VOLUME_DOWN = '-'
+PAUSE = ' '
+NEXT = "next"
+STOP = "stop"
+COMMANDS = [VOLUME_DOWN, VOLUME_UP, PAUSE, NEXT, STOP]
+COMMAND_QUEUE = Queue()
+""" *************************************************************** """
+
+ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.00235903263092041,      0.002854257822036743,      1.02996826171875E-4    ]  }}'
 
 
 class MusicChild:

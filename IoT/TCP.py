@@ -7,9 +7,8 @@ BUFFER_SIZE = 1024
 FILE_READ_SIZE = 1024
 NUM_CONN = 5
 
-def things():
-    print("things")
 
+"""
 class TCPserver:
     def __init__(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,6 +30,7 @@ class TCPserver:
 
     def processConnection(self, client_socket):
         message = self.receiveMessage(client_socket)
+        return message
         
     def receiveMessage(self, socket):
         try:
@@ -39,28 +39,28 @@ class TCPserver:
             print("Error: no child sock to receive")
         return data.decode()
 
-    def sendMessage(self, message):
-        self.child_sock.send(message.encode())
-
-    def receiveFile(self, filePath):
+    def receiveFile(self, filePath, socket):
         try:
             f = open(filePath, 'wb')
         except:
             print("error opening file for writing: " + filePath)
-        data = self.child_sock.recv(BUFFER_SIZE)
+        data = socket.recv(BUFFER_SIZE)
         while(data):
             f.write(data)
             if len(data) < BUFFER_SIZE:
                 break
-            data = self.child_sock.recv(BUFFER_SIZE)
+            data = socket.recv(BUFFER_SIZE)
         f.close()
         print("Finished receiving file " + filePath)
 
     def closeSocket(self):
         self.s.close()
-
+"""
 
 class TCPsocket:
+    #class is designed to set up single socket connections. By using listen, the object can wait for a single connection
+    #on a specified port and store that socket as "child_socket". Any subsequent calls from that object will use this 
+    #socket fd. This class can also be used to initiate the connection for a single TCP socket.
     def __init__(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.child_socket = None
@@ -86,7 +86,10 @@ class TCPsocket:
         self.s.close()
 
     def sendMessage(self, message):
-        self.s.send(message.encode())
+        if self.child_socket is not None:
+            self.child_socket.send(message.encode())
+        else:
+            self.s.send(message.encode())
 
     def sendFile(self, path):
         f = open(path, 'rb')
@@ -109,13 +112,20 @@ class TCPsocket:
             f = open(filePath, 'wb')
         except:
             print("error opening file for writing: " + filePath)
-        data = self.s.recv(BUFFER_SIZE)
+        if self.child_socket is not None:
+            socket = self.child_socket
+        else:
+            socket = self.s
+        data = socket.recv(BUFFER_SIZE)
         while(data):
             f.write(data)
             if len(data) < BUFFER_SIZE:
                 break
-            data = self.s.recv(BUFFER_SIZE)
+            data = socket.recv(BUFFER_SIZE)
         f.close()
 
     def closeSocket(self):
-        self.s.close()
+        if self.child_socket is not None:
+            self.child_socket.close()
+        else:
+            self.s.close()
