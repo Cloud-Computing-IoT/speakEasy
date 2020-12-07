@@ -1,9 +1,11 @@
-# ENSURE YOU ARE USING TENSORFLOW 1.14
+# Reguirements:
+# Python 3.7, TensorFlow 1.14, numpy, resampy, tf_slim, six, soundfile
 #
-# USE:
-#
+# Usage example:
 # import analyze_audio
 # results_dict = analyze_audio.run("recording.wav")
+
+# This file provides an interface to the feature extractor and classifier programs
 
 import subprocess
 import pathlib
@@ -25,7 +27,3 @@ def run(input_filename):
     results = inference.main()
 
     return results
-
-if __name__ == "__main__":
-    results = run('Another_day_w_voice_close.wav')
-    print(results)
