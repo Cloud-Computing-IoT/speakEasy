@@ -26,11 +26,15 @@ if __name__ == "__main__":
 
         # Process accelerometer data to adjust volume
         volume_adjustment_accelerometer = 0
-        
+
         
         # Adjust volume
         volume += volume_adjustment_audio
         volume += volume_adjustment_accelerometer
+        if(volume < 1):
+            volume = 1
+        elif(volume > 10):
+            volume = 10
 
         # Send command to speaker to adjust volume
         print(volume)
