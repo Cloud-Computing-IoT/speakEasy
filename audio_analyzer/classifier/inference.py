@@ -42,11 +42,11 @@ FLAGS = flags.FLAGS
 def init():
   # Input
   flags.DEFINE_string(
-      "train_dir", "/Users/tristanelma/My_stuff/EE_542/final_project/system/classifier/models/frame/sample_model", "The directory to load the model files from. We assume "
+      "train_dir", "/home/ubuntu/EE542_final_project/Cloud-Enabled-Smart-Speaker/audio_analyzer/classifier/models/frame/sample_model", "The directory to load the model files from. We assume "
       "that you have already run eval.py onto this, such that "
       "inference_model.* files already exist.")
   flags.DEFINE_string(
-      "input_data_pattern", "/Users/tristanelma/My_stuff/EE_542/final_project/system/extracted_features.tfrecord",
+      "input_data_pattern", "/home/ubuntu/EE542_final_project/Cloud-Enabled-Smart-Speaker/audio_analyzer/extracted_features.tfrecord",
       "File glob defining the evaluation dataset in tensorflow.SequenceExample "
       "format. The SequenceExamples are expected to have an 'rgb' byte array "
       "sequence feature as well as a 'labels' int64 context feature.")
@@ -76,7 +76,7 @@ def init():
       "The file that contains the segment label ids.")
 
   # Output
-  flags.DEFINE_string("output_file", "/Users/tristanelma/My_stuff/EE_542/final_project/youtube-8m/kaggle_solution.csv", "The file to save the predictions to.")
+  flags.DEFINE_string("output_file", "/home/ubuntu/EE542_final_project/Cloud-Enabled-Smart-Speaker/audio_analyzer/solution.csv", "The file to save the predictions to.")
   flags.DEFINE_string(
       "output_model_tgz", "",
       "If given, should be a filename with a .tgz extension, "

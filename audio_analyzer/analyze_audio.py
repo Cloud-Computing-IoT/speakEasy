@@ -6,16 +6,19 @@
 # results_dict = analyze_audio.run("recording.wav")
 
 import subprocess
+import pathlib
+import os
 
 from classifier import inference
 
 def run(input_filename):
+    proj_dir = pathlib.Path(__file__).parent.absolute()
     # Feature extraction
     subprocess.run(['feature_extraction/vggish_inference_demo.py',
-                    '--wav_file', '/Users/tristanelma/My_stuff/EE_542/final_project/system/' + input_filename,
+                    '--wav_file', os.path.join(proj_dir, input_filename),
                     '--tfrecord_file', 'extracted_features.tfrecord',
-                    '--pca_params', '/Users/tristanelma/My_stuff/EE_542/final_project/system/feature_extraction/vggish_pca_params.npz',
-                    '--checkpoint', '/Users/tristanelma/My_stuff/EE_542/final_project/system/feature_extraction/vggish_model.ckpt'
+                    '--pca_params', os.path.join(proj_dir, 'feature_extraction/vggish_pca_params.npz'),
+                    '--checkpoint', os.path.join(proj_dir, 'feature_extraction/vggish_model.ckpt')
                     ])
 
     # Classification/inference
@@ -23,6 +26,6 @@ def run(input_filename):
 
     return results
 
-# if __name__ == "__main__":
-#     results = run('Another_day_no_voice.wav')
-#     print(results)
+if __name__ == "__main__":
+    results = run('Another_day_w_voice_close.wav')
+    print(results)

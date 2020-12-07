@@ -37,10 +37,10 @@ FLAGS = flags.FLAGS
 
 if __name__ == "__main__":
   # Dataset flags.
-  flags.DEFINE_string("train_dir", "/Users/tristanelma/My_stuff/EE_542/final_project/youtube-8m/models/frame/sample_model",
+  flags.DEFINE_string("train_dir", "/home/ubuntu/EE542_final_project/Cloud-Enabled-Smart-Speaker/audio_analyzer/classifier/models/frame/sample_model",
                       "The directory to save the model files in.")
   flags.DEFINE_string(
-      "train_data_pattern", "/Users/tristanelma/My_stuff/EE_542/final_project/audioset_v1_embeddings/unbal_train/*.tfrecord",
+      "train_data_pattern", "/home/ubuntu/EE542_final_project/audioset_v1_embeddings/unbal_train/*.tfrecord",
       "File glob for the training dataset. If the files refer to Frame Level "
       "features (i.e. tensorflow.SequenceExample), then set --reader_type "
       "format. The (Sequence)Examples are expected to have 'rgb' byte array "
@@ -97,7 +97,7 @@ if __name__ == "__main__":
       "num_epochs", 5, "How many passes to make over the dataset before "
       "halting training.")
   flags.DEFINE_integer(
-      "max_steps", 300,
+      "max_steps", 1000,
       "The maximum number of iterations of the training loop.")
   flags.DEFINE_integer(
       "export_model_steps", 1000,

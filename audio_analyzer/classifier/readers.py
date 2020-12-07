@@ -119,7 +119,7 @@ class YT8MAggregatedFeatureReader(BaseReader):
         len(self.feature_names), len(self.feature_sizes))
 
     feature_map = {
-        #"id": tf.io.FixedLenFeature([], tf.string),
+        #"video_id": tf.io.FixedLenFeature([], tf.string),
         "labels": tf.io.VarLenFeature(tf.int64)
     }
     for feature_index in range(num_features):
@@ -133,7 +133,7 @@ class YT8MAggregatedFeatureReader(BaseReader):
         [features[feature_name] for feature_name in self.feature_names], 1)
 
     output_dict = {
-        "video_ids": features["id"],
+        "video_ids": features["video_id"],
         "video_matrix": concatenated_features,
         "labels": labels,
         "num_frames": tf.ones([tf.shape(serialized_examples)[0]])
@@ -235,7 +235,7 @@ class YT8MFrameFeatureReader(BaseReader):
 
     # Read/parse frame/segment-level labels.
     context_features = {
-        #"id": tf.io.FixedLenFeature([], tf.string),
+        #"video_id": tf.io.FixedLenFeature([], tf.string),
     }
     if self.segment_labels:
       context_features.update({
@@ -298,7 +298,7 @@ class YT8MFrameFeatureReader(BaseReader):
       batch_video_matrix = tf.gather_nd(video_matrix,
                                         tf.expand_dims(range_mtx, axis=-1))
       num_segment = tf.shape(batch_video_matrix)[0]
-      batch_video_ids = tf.reshape(tf.tile([contexts["id"]], [num_segment]),
+      batch_video_ids = tf.reshape(tf.tile([contexts["video_id"]], [num_segment]),
                                    (num_segment,))
       batch_frames = tf.reshape(tf.tile([segment_size], [num_segment]),
                                 (num_segment,))
@@ -330,7 +330,7 @@ class YT8MFrameFeatureReader(BaseReader):
                                   default_value=False,
                                   validate_indices=False)
       # convert to batch format.
-      #batch_video_ids = tf.expand_dims(contexts["id"], 0)
+      #batch_video_ids = tf.expand_dims(contexts["video_id"], 0)
       batch_video_ids = tf.expand_dims(1, 0)
       batch_video_matrix = tf.expand_dims(video_matrix, 0)
       batch_labels = tf.expand_dims(labels, 0)

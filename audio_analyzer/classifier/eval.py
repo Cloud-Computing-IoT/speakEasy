@@ -33,12 +33,12 @@ FLAGS = flags.FLAGS
 if __name__ == "__main__":
   # Dataset flags.
   flags.DEFINE_string(
-      "train_dir", "/Users/tristanelma/My_stuff/EE_542/final_project/youtube-8m/models/frame/sample_model",
+      "train_dir", "/home/ubuntu/EE542_final_project/Cloud-Enabled-Smart-Speaker/audio_analyzer/classifier/models/frame/sample_model",
       "The directory to load the model files from. "
       "The tensorboard metrics files are also saved to this "
       "directory.")
   flags.DEFINE_string(
-      "eval_data_pattern", "/Users/tristanelma/My_stuff/EE_542/final_project/audioset_v1_embeddings/eval/*.tfrecord",
+      "eval_data_pattern", "/home/ubuntu/EE542_final_project/audioset_v1_embeddings/eval/*.tfrecord",
       "File glob defining the evaluation dataset in tensorflow.SequenceExample "
       "format. The SequenceExamples are expected to have an 'rgb' byte array "
       "sequence feature as well as a 'labels' int64 context feature.")

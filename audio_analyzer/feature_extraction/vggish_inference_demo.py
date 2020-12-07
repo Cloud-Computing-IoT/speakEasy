@@ -112,6 +112,7 @@ def main(_):
         # Define the model in inference mode, load the checkpoint, and
         # locate input and output tensors.
         vggish_slim.define_vggish_slim(training=False)
+        print(FLAGS.checkpoint)
         vggish_slim.load_vggish_slim_checkpoint(sess, FLAGS.checkpoint)
         features_tensor = sess.graph.get_tensor_by_name(
             vggish_params.INPUT_TENSOR_NAME)
