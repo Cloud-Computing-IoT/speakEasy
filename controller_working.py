@@ -111,7 +111,11 @@ class VolumeController:
 
         #moving average accelerator buffer
         self.dance_buffer_length = 10
-        self.danceBuffer = {}
+        self.danceBuffer = []
+        self.danceStorage = {}
+        self.dance_storage_ttl = 10
+
+
 
         #logistic curve
         self.x_not = 10
@@ -125,7 +129,22 @@ class VolumeController:
             if len(self.audioBuffers[key]) > self.audio_buffer_length:
                 self.audioBuffers[key] = self.audioBuffers[key][1:]
     def processDance(self, results):
-        pass
+
+        self.danceStorage = {}
+        self.dance_storage_ttl = 10
+        runsum = 0
+        for person, value in results:
+            mag = get_vector_magnatude(value)
+            runsum += mag
+            if person in self.danceStorage.keys():
+                self.danceStorage[person]["TTL"] = self.dance_storage_ttl
+                self.danceStorage[person]["Mag"].append(mag)
+            else:
+                self.danceStorage[person] = {"TTL": self.dance_storage_ttl, "Mag": mag}
+        for entry in self.danceStorage:
+            entry["TTL"] -= 1
+        self.danceBuffer..append(runsum/len(results))
+        return self.getVolumeChange()
 
     def processAudio(self):
         value = 0
@@ -140,12 +159,12 @@ class VolumeController:
             if (abs(new_value - old_value) > self.threshold):
                 self.current_volume += (new_value - old_value)*self.get_bias_function((new_value - old_value))
                 return self.current_volume
-        return self.current_volume
+        return self.getVolumeChange
     def getVolumeChange(self):
         delta = self.proposed_volume - self.current_volume
         self.proposed_volume = self.current_volume
-        self.raw_values = self.raw_values[-1:] #dont need past values anymore 
-        return delta 
+        self.raw_values = self.raw_values[-1:] #dont need past values anymore
+        return delta
 
 
     def _getBiasFunction(self, proposed_delta):
@@ -185,14 +204,13 @@ if __name__ == "__main__":
         while not mainInterface.audioFileQueue.empty(): 
             input_audio_file = mainInterface.audioFileQueue.get()
             results = analyze_audio.run(input_audio_file)
-            volumeControl.processAudio(results)
-            delta = volumeControl.getVolumeChange()
-            # check for volume change each time for low latency 
-            if delta: 
-                mainInterface.commandQueue.put(delta) 
-                
-        while not mainInterface.danceDataQueue(): 
-            volumeControl.processDance(volumeControl.mainInterface.danceDataQueue.get())
-            delta = volumeControl.getVolumeChange()
-            if delta: 
+            delta = volumeControl.processAudio(results)
+            # check for volume change each time for low latency
+            if delta:
                 mainInterface.commandQueue.put(delta)
+
+        while not mainInterface.danceDataQueue():
+            delta = volumeControl.processDance(volumeControl.mainInterface.danceDataQueue.get())
+            if delta:
+                mainInterface.commandQueue.put(delta)
+
