@@ -1,6 +1,12 @@
 # Controller script for speaker
 
 from audio_analyzer import analyze_audio
+import TCP as tcp
+import socket
+import threading
+from multiprocessing import Process
+from queue import Queue
+import json
 
 def parseObject(message, addr):
     new_message = json.loads(message)
