@@ -12,7 +12,7 @@ import os
 import math
 from statistics import mean
 
-def get_vector_magnatude(vector_input):
+def get_vector_mag(vector_input):
     #assuming m/s^2
     mag = sqrt(sum([x**2 for x in vector_input]))
     return mag - 9.8
@@ -132,9 +132,10 @@ class VolumeController:
 
         self.danceStorage = {}
         self.dance_storage_ttl = 10
-        runsum = 0
+        runsum = 0.0
+        # not sure if well need this dance storage but just in case
         for person, value in results:
-            mag = get_vector_magnatude(value)
+            mag = get_vector_mag(value)
             runsum += mag
             if person in self.danceStorage.keys():
                 self.danceStorage[person]["TTL"] = self.dance_storage_ttl
@@ -143,7 +144,9 @@ class VolumeController:
                 self.danceStorage[person] = {"TTL": self.dance_storage_ttl, "Mag": mag}
         for entry in self.danceStorage:
             entry["TTL"] -= 1
-        self.danceBuffer..append(runsum/len(results))
+        self.danceBuffer.append(runsum/len(results))
+        if len(self.danceBuffer) > self.dance_buffer_length: 
+            self.danceBuffer = self.danceBuffer[1:]
         return self.getVolumeChange()
 
     def processAudio(self):
@@ -152,7 +155,7 @@ class VolumeController:
         #audio_values = {param : (mean(self.audioBuffers[param]) > self.audio_class_threshold)
                         #for param in self.audioFeatures.keys()}
         values = {param : (mean(self.audioBuffers[param]) for param in self.audioFeatures.keys()}
-        values["dance"] = mean([mean(val) for val in self.danceBuffer.values()])
+        values["dance"] = mean(self.danceBuffer)
         new_value = sum([values[key]*self.featureWeights[key] for key in self.audioFeatures.keys()])
         self.raw_values.append(new_value)
         for old_value in self.raw_values[:-1]:
