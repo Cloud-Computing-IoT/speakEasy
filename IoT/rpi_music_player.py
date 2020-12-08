@@ -90,12 +90,6 @@ class RecordChild:
 		# this process will automatically terminate after it records for 'record_time'
 		# maybe add automatically sending the file and deleting it?
 
-# class spawnThread:
-# 	def __init__(self, function, lock, params = None ):
-# 		print((lock,params))
-# 		self.thread = threading.Thread(target=function, args=(lock,params))
-# 		self.thread.start()
-
 #probably need to periodically clean up recordings or delete immediately after sending?
 def cleanUpRecordings(current_num):
 	for file in os.listdir(HOME_DIREC):
