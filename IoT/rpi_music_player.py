@@ -58,8 +58,8 @@ VOLUME_DOWN = '-'
 PAUSE = ' '
 NEXT = 'next'
 STOP = 'stop'
-FAST_FORWARD: '^[[C'
-REWIND: '^[[D'
+FAST_FORWARD = '^[[C'
+REWIND = '^[[D'
 COMMANDS = [VOLUME_DOWN, VOLUME_UP, PAUSE, NEXT, STOP, FAST_FORWARD, REWIND]
 COMMAND_QUEUE = Queue()
 """ *************************************************************** """
@@ -98,8 +98,8 @@ class RecordChild:
 		print("finished recording {}".format(REC_COUNT))
 		RECORD_QUEUE.put("{}{}.wav".format(HOME_DIREC,file_name))
 		REC_COUNT += 1
-		# if REC_COUNT >= FILE_LIMIT:
-		# 	cleanUpRecordings(REC_COUNT-FILE_LIMIT)
+		if REC_COUNT >= FILE_LIMIT:
+			cleanUpRecordings(REC_COUNT-FILE_LIMIT)
 		FINISHED_RECORDING = 1
 
 # Function deletes all recordings except for the last FILE_LIMIT
@@ -151,6 +151,7 @@ def sendRecording(file_path):
 		os.remove(file_path)
 	except:
 		print("Error sending file: " + file_path)
+		pass
 
 if __name__ == '__main__':
 
