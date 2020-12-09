@@ -55,14 +55,16 @@ if __name__ == "__main__":
     rpi_socket.listen("0.0.0.0", RPI_LISTEN_PORT)
     # volume = 5
     print("after listen")
-
+    file_count = 0
     while True:
         message = input("What do you want to send: ")
         rpi_socket.sendMessage(message)
         if message == "file":
-            rpi_socket.receiveFile("/Users/matthewpisini/Desktop/dummy.txt")
+            rpi_socket.receiveFile("/home/ubuntu/EE542_final_project/{}.wav".format(file_count))
+            file_count += 1
         elif message == "stop":
             rpi_socket.closeSocket()
+            sys.exit(1)
         else:
             data = rpi_socket.receiveMessage()
             print(data)

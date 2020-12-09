@@ -80,9 +80,9 @@ class RecordChild:
 		self.child.expect(pexpect.EOF)
 		global REC_COUNT, RECORD_QUEUE
 		print("finished recording {}".format(REC_COUNT))
-		lock.acquire()
+		# lock.acquire()
 		RECORD_QUEUE.put("{}{}.wav".format(HOME_DIREC,file_name))
-		lock.release()
+		# lock.release()
 		REC_COUNT += 1
 		if REC_COUNT >= FILE_LIMIT:
 			cleanUpRecordings(REC_COUNT-FILE_LIMIT)
@@ -105,14 +105,14 @@ def controlInterface(command_lock, record_lock):
 		while True:
 			message = AWS_socket.receiveMessage()
 			if message.lower() == "file":
-				record_lock.acquire()
+				# record_lock.acquire()
 				AWS_socket.sendFile(RECORD_QUEUE.get())
-				record_lock.release()
+				# record_lock.release()
 			elif message in COMMANDS:
-				AWS_socket.sendMessage("Received: " + message)
-				command_lock.acquire()
+				# AWS_socket.sendMessage("Received: " + message)
+				# command_lock.acquire()
 				COMMAND_QUEUE.put(message)
-				command_lock.release()
+				# command_lock.release()
 				if message.lower() == "stop":
 					AWS_socket.closeSocket()
 					break
