@@ -115,6 +115,7 @@ def controlInterface():
 	try:
 		AWS_socket = tcp.TCPsocket()
 		AWS_socket.connect(AWS_IP, AWS_COMMAND_PORT)
+		print("Connected to AWS control interface on port " + str(AWS_COMMAND_PORT))
 		while True:
 			message = AWS_socket.receiveMessage()
 			if message.lower() == "file":
