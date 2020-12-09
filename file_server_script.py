@@ -20,7 +20,7 @@ def processFile(socket, addr, filePath):
     f.close()
 
 
-def TCPserver(TCP_IP, TCP_PORT):
+def TCPserver(TCP_IP, TCP_PORT, FILE_PATH):
     global FILE_NUM
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -42,4 +42,4 @@ if __name__ == "__main__":
     inputs = sys.argv
     LISTENING_PORT = inputs[1]
     FILE_PATH = inputs[2]
-    TCPserver("0.0.0.0",int(LISTENING_PORT))
+    TCPserver("0.0.0.0",int(LISTENING_PORT), FILE_PATH)
