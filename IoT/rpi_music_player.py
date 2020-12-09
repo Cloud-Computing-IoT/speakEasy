@@ -15,29 +15,22 @@ Inputs (via CLI):
 None
 
 """
+
 import os
 import time
 import sys
 import pexpect
 import TCP as tcp
 import threading
-import ctypes
 from queue import Queue
 
-"""
-arrow-up:      ^[[A
-arrow-down:    ^[[B
-arrow-right:   ^[[C
-arrow-left:    ^[[D
-"""
-HOME_DIREC = "/home/pi/"
+HOME_DIREC = "/home/pi/"		#Path to RPi home directory
 
 """ ******************** TCP GLOBALS ******************** """
-TCP_IP = "192.168.86.26"
-AWS_IP = "54.187.194.13"
-AWS_COMMAND_PORT = 5005
-AWS_FILE_PORT = 5006
-LOST_CONNECTION_FLAG = 0
+AWS_IP = "54.187.194.13"		#IP address of AWS EC2 instance
+AWS_COMMAND_PORT = 5005			#Port number for AWS controller
+AWS_FILE_PORT = 5006			#Port number to send .wav files
+LOST_CONNECTION_FLAG = 0		#Flag if conneection to AWS is lost
 """ **************************************************** """
 
 """ ******************** SONG GLOBALS ******************** """
@@ -51,22 +44,23 @@ SONG_NUM = 0
 
 """ ******************** RECORDING GLOBALS ******************** """
 RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_path}{file}.wav"
-RECORD_COMMAND2 = "arecord -D hw:1,0 -f cd tester.wav"
-FILE_LIMIT = 5
-FINISHED_RECORDING = 1
-RECORDING_LENGTH = 2
-REC_COUNT = 0
-RECORD_QUEUE = Queue()
+FILE_LIMIT = 5					#File limit local sttorage
+FINISHED_RECORDING = 1			#Flag to start new recording
+RECORDING_LENGTH = 2			#Recording duration in seconds
+REC_COUNT = 0					#Current recording number
+RECORD_QUEUE = Queue()			#Queue to store recording paths
 """ *********************************************************** """
 
 """ ******************** MUSIC/COMMAND GLOBALS ******************** """
-OMXPLAYER_START = "delay: 0\r\n"
+OMXPLAYER_START = "delay: 0\r\n" #expected output when invoking OMXplayer
 VOLUME_UP = '='
 VOLUME_DOWN = '-'
 PAUSE = ' '
-NEXT = "next"
-STOP = "stop"
-COMMANDS = [VOLUME_DOWN, VOLUME_UP, PAUSE, NEXT, STOP]
+NEXT = 'next'
+STOP = 'stop'
+FAST_FORWARD: '^[[C'
+REWIND: '^[[D'
+COMMANDS = [VOLUME_DOWN, VOLUME_UP, PAUSE, NEXT, STOP, FAST_FORWARD, REWIND]
 COMMAND_QUEUE = Queue()
 """ *************************************************************** """
 
@@ -166,8 +160,8 @@ if __name__ == '__main__':
 	command_thread = threading.Thread(target=controlInterface, args=())
 	command_thread.start()
 
-	# Main loop: handles speaker control, recording processes, sending recordings,
-	# connection loss,
+	# Main loop: handles speaker control, spawning speaker processes, 
+	# recording processes, sending recordings, and connection restablishment.
 	while True:
 		# Check if the music playing process is alive. If not, start a new one.
 		if not music_child.child.isalive():
