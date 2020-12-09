@@ -10,14 +10,14 @@ Matt Pisini, Charlie Bennett, Tristan Elma
 
 ---
 
-Requirements:
+**Requirements:**
 - Python 3.7, TensorFlow 1.14, numpy, resampy, tf_slim, six, soundfile
 - Install TensorFlow 1.14:
 `python3 -m pip install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.14.0-py3-none-any.whl`
 
 ---
 
-Instructions:
+**Instructions:**
 - The code assumes the repo is cloned into /home/ubuntu/EE542_final_project/Cloud-Enabled-Smart-Speaker/ .
 - Establish TCP connections from RPi and Androids to supply audio and accelerometer data
 - Begin the main program:
@@ -25,7 +25,7 @@ Instructions:
 
 ---
 
-Credit:
+**Credit:**
 Audio training data, audio feature extractor, and audio classifier adapted from the AudioSet and YouTube-8M projects from Google:
 - AudioSet:
     - GitHub: https://github.com/tensorflow/models/tree/master/research/audioset
