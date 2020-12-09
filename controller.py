@@ -1,12 +1,17 @@
 # Controller script for speaker
 
 from audio_analyzer import analyze_audio
-import TCP as tcp
+from IoT import TCP as tcp
+import sys
 import socket
 import threading
 from multiprocessing import Process
 from queue import Queue
 import json
+
+SERVER_MESSAGE_Q = Queue()
+RPI_LISTEN_PORT = 5005
+NUM_CONN = 5
 
 def parseObject(message, addr):
     new_message = json.loads(message)
@@ -40,9 +45,27 @@ def TCPserver(TCP_IP, TCP_PORT):
     s.close()
 
 if __name__ == "__main__":
-    server_thread = threading.Thread(target=TCPserver, args=(socket.gethostname(),DEVICES_LISTEN_PORT,))
-    server_thread.start()
-    volume = 5
+    # server_thread = threading.Thread(target=TCPserver, args=(socket.gethostname(),DEVICES_LISTEN_PORT,))
+    # server_thread.start()
+
+    rpi_socket = tcp.TCPsocket()
+    rpi_socket.listen(socket.gethostname(), RPI_LISTEN_PORT)
+    # volume = 5
+
+    while True:
+        message = input("What do you want to send: ")
+        rpi_socket.sendMessage(message)
+        if message == "file":
+            rpi_socket.receiveFile("/Users/matthewpisini/Desktop/dummy.txt")
+        else:
+            data = rpi_socket.receiveMessage()
+            print(data)
+            if "Terminating" in data:
+                rpi_socket.closeSocket()
+                print("Finished listening")
+                sys.exit(1)
+
+    """
     while(True):
         # Retrieve data from mic and accelerometers
 
@@ -76,3 +99,4 @@ if __name__ == "__main__":
 
         # Send command to speaker to adjust volume
         print(volume)
+"""
