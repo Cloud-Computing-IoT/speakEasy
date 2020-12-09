@@ -3,9 +3,16 @@ Author: Matt Pisini
 Date: 12/8/20
 
 Description:
-Runs the 
+This code runs on the RPi and handles several functionl:
+1. Runs process for the speaker through OMXplayer CLI. We can send commands 
+to this process in order to change volume, pause the music, or skip the song.
+2. Runs process for recording audio clips with the attached microphone. These
+recordings are of set length and are saved locally before sending to AWS.
+3. Runs a process for communicating with AWS in order to receive speaker commands.
+4. Runs processes to send the .wav recording files for every file created.
 
 Inputs (via CLI):
+None
 
 """
 import os
@@ -31,7 +38,7 @@ AWS_IP = "54.187.194.13"
 AWS_COMMAND_PORT = 5005
 AWS_FILE_PORT = 5006
 LOST_CONNECTION_FLAG = 0
-""" ************************v**************************** """
+""" **************************************************** """
 
 """ ******************** SONG GLOBALS ******************** """
 MUSIC_PATH = "/home/pi/{music}"
@@ -65,7 +72,7 @@ COMMAND_QUEUE = Queue()
 
 ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.00235903263092041,      0.002854257822036743,      1.02996826171875E-4    ]  }}'
 
-# This spawns a process to manage playing music to the speaker.
+# This class spawns a process to manage playing music to the speaker.
 # Commands can be sent via the CLI to adjust control of the speaker.
 class MusicChild:
 	def __init__(self, sample_music):
@@ -97,8 +104,8 @@ class RecordChild:
 		print("finished recording {}".format(REC_COUNT))
 		RECORD_QUEUE.put("{}{}.wav".format(HOME_DIREC,file_name))
 		REC_COUNT += 1
-		if REC_COUNT >= FILE_LIMIT:
-			cleanUpRecordings(REC_COUNT-FILE_LIMIT)
+		# if REC_COUNT >= FILE_LIMIT:
+		# 	cleanUpRecordings(REC_COUNT-FILE_LIMIT)
 		FINISHED_RECORDING = 1
 
 # Function deletes all recordings except for the last FILE_LIMIT
@@ -108,7 +115,8 @@ def cleanUpRecordings(current_num):
 		if "rec{}".format(current_num) in file:
 			os.remove(os.path.join(HOME_DIREC, file))
 
-# This function
+# This function maintains communication with AWS in order to receive commands.
+# All received input is added to a global queue for processing in the main loop.
 def controlInterface():
 	try:
 		AWS_socket = tcp.TCPsocket()
@@ -129,7 +137,8 @@ def controlInterface():
 		print("Lost connection to AWS")
 		LOST_CONNECTION_FLAG = 1
 		
-
+# Function called in main loop to invokes speaker process for playing a song.
+# Returns the created MusicChild object.
 def startMusic(song_num):
 	global SONG_NUM
 	music_child = MusicChild(SONG_LIST[SONG_NUM])
@@ -138,29 +147,34 @@ def startMusic(song_num):
 	if SONG_NUM >= len(SONG_LIST):
 		SONG_NUM = 0
 	return music_child
-		
+
+# This function is called by a thread created to send a recording file to AWS.
 def sendRecording(file_path):
 	AWS_socket = tcp.TCPsocket()
 	AWS_socket.connect(AWS_IP, AWS_FILE_PORT)
 	try:
 		AWS_socket.sendFile(file_path)
+		os.remove(file_path)
 	except:
 		print("Error sending file: " + file_path)
 
 if __name__ == '__main__':
-	music_child = startMusic(SONG_NUM)
 
-	# command_lock = threading.Lock()
-	# record_lock = threading.Lock()
+	# Spawn initial music playing process
+	music_child = startMusic(SONG_NUM)
+	# Spawn communication thread with AWS for commands.
 	command_thread = threading.Thread(target=controlInterface, args=())
 	command_thread.start()
 
-
+	# Main loop: handles speaker control, recording processes, sending recordings,
+	# connection loss,
 	while True:
+		# Check if the music playing process is alive. If not, start a new one.
 		if not music_child.child.isalive():
 			print("Song is over... :(")
 			music_child = startMusic(SONG_NUM)
 		
+		# Check for AWS commands that have not been processes
 		if not COMMAND_QUEUE.empty():
 			message = COMMAND_QUEUE.get()
 			if message.lower() == "stop":
@@ -175,18 +189,20 @@ if __name__ == '__main__':
 				output = music_child.changeMusicOutput(message)
 				print(output)
 
+		# Start new recording process if last recording has finished.
 		if FINISHED_RECORDING == 1:
 			#create thread which will handle the recording subprocess
 			FINISHED_RECORDING = 0
 			x = threading.Thread(target=RecordChild, args=(RECORDING_LENGTH,"rec{}".format(REC_COUNT)))
 			x.start()
 
+		# Check if there are recordings that need to be sent to AWS
 		if not RECORD_QUEUE.empty():
-			#create thread which will send recording
+			#create thread to send recording
 			x = threading.Thread(target=sendRecording, args=(RECORD_QUEUE.get(),))
 			x.start()
 		
-		# Attempt to restablish connection with the AWS instance
+		# If connection with AWS is lost, attempt to restablish
 		if LOST_CONNECTION_FLAG:
 			LOST_CONNECTION_FLAG = 0
 			command_thread = threading.Thread(target=controlInterface, args=())
