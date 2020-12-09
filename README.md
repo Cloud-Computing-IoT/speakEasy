@@ -1,22 +1,24 @@
 # Cloud-Enabled-Smart-Speaker
 
+"speakEasy"
+Final Project for EE 542 at the University of Southern California
+Matt Pisini, Charlie Bennett, Tristan Elma
 
-Audio Sample Google Drive Folder:
-https://drive.google.com/drive/u/1/folders/1DA_jWyUNl5f5mxwNiFI4wogO564nuH4U
+speakEasy is a smart speaker controller that adjusts speaker volume in real-time, based on audio and accelerometer data collected from the area around it. This code was designed and tested on an Amazon EC2 instance (t2.xlarge) running Ubuntu 16.04, interfacing with an RPi that is connected to the speaker and microphone, as well as Android phones which gather accelerometer data through Termux and communicate it to the cloud using Netcat.
 
+Requirements:
+- Python 3.7, TensorFlow 1.14, numpy, resampy, tf_slim, six, soundfile
 
+Instructions:
+- The code assumes the repo is cloned into /home/ubuntu/EE542_final_project/Cloud-Enabled-Smart-Speaker/ .
+- Establish TCP connections from RPi and Androids to supply audio and accelerometer data
+- Begin the main program: python3 controller_working.py
 
-AudioSet Dataset (Google provides lots of audio data which has already been feature-extracted to 128-D features with labels of various audio events):
-https://research.google.com/audioset/download.html
-
-Feature Extractor Program (this takes in audio files and generates the 128-D features for each second):
-https://github.com/tensorflow/models/tree/master/research/audioset/vggish
-
-Classifier Starter Code:
-https://github.com/google/youtube-8m
-Note: I've noticed bugs in the classifier starter code due to old TensorFlow code (version 1.0), that no longer works. We'll likely have to tweak it to upgrade it to TF 2.0 and also to work with our audio data only.
-
-Here is the YouTube8M Dataset, which is very similar dataset to AudioSet, except that it has both video (rgb) and audio annotations (with the same format as AudioSet).
-I've included this because this is the dataset used by the classifier starter code, though it can likely be modified to work with AudioSet.
-YouTube8M Dataset (see "Frame-level features dataset"): https://research.google.com/youtube8m/download.html
-
+Audio training data, audio feature extractor, and audio classifier adapted from the AudioSet and YouTube-8M projects from Google:
+- AudioSet:
+    - GitHub: https://github.com/tensorflow/models/tree/master/research/audioset
+    - Paper: https://research.google.com/pubs/pub45857.html
+    - Authors: Dan Ellis, Shawn Hershey, Aren Jansen, Manoj Plakal
+- YouTube-8M:
+    - GitHub: https://github.com/google/youtube-8m
+    - Paper: https://arxiv.org/abs/1609.08675
