@@ -26,7 +26,7 @@ Matt Pisini, Charlie Bennett, Tristan Elma
 ---
 
 **Credit:**
-Audio training data, audio feature extractor, and audio classifier adapted from the AudioSet and YouTube-8M projects from Google:
+Audio training data, audio feature extractor, and audio classifier (within `audio_analyzer/feature_extraction` and `audio_analyzer/classifier`) adapted from the AudioSet and YouTube-8M projects from Google:
 - AudioSet:
     - GitHub: https://github.com/tensorflow/models/tree/master/research/audioset
     - Paper: https://research.google.com/pubs/pub45857.html
