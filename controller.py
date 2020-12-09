@@ -1,6 +1,6 @@
 # Controller script for speaker
 
-from audio_analyzer import analyze_audio
+# from audio_analyzer import analyze_audio
 from IoT import TCP as tcp
 import sys
 import socket
