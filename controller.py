@@ -49,9 +49,10 @@ if __name__ == "__main__":
     # server_thread.start()
     print("before socket")
     rpi_socket = tcp.TCPsocket()
+    print("after socket")
     rpi_socket.listen(socket.gethostname(), RPI_LISTEN_PORT)
     # volume = 5
-    print("after socket")
+    print("after listen")
 
     while True:
         message = input("What do you want to send: ")
