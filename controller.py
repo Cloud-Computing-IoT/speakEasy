@@ -11,7 +11,10 @@ import json
 
 SERVER_MESSAGE_Q = Queue()
 RPI_LISTEN_PORT = 5005
+DEVICES_LISTEN_PORT = 5006
 NUM_CONN = 5
+BUFFER_SIZE = 1024
+FILE_PATH = "/home/ubuntu/EE542_final_project/"
 
 def parseObject(message, addr):
     new_message = json.loads(message)
@@ -27,8 +30,23 @@ def processConnection(socket, addr):
     parseObject(data, addr)
     # SERVER_MESSAGE_Q.put(data.decode())
 
-def TCPserver(TCP_IP, TCP_PORT):
+def processFile(socket, addr, filePath):
+    try:
+        f = open(filePath, 'wb')
+    except:
+        print("error opening file for writing: " + filePath)
+    data = socket.recv(BUFFER_SIZE)
+    while(data):
+        f.write(data)
+        # if len(data) < BUFFER_SIZE:
+        #     break
+        data = socket.recv(BUFFER_SIZE)
+    f.close()
+
+file_num = 0
+def TCPserver(TCP_IP, TCP_PORT, KEY):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    global file_num
     try:
         s.bind((TCP_IP, TCP_PORT))
         s.listen(NUM_CONN)
@@ -38,23 +56,21 @@ def TCPserver(TCP_IP, TCP_PORT):
         sys.exit(1)
     while True:
         conn, addr = s.accept()
-        child = threading.Thread(target=processConnection, args=(conn,addr,))
+        if KEY == "devices":
+            child = threading.Thread(target=processConnection, args=(conn,addr,))
+        else:
+            child = threading.Thread(target=processFile, args=(conn,addr,"{}{}.wav".format(FILE_PATH,file_num),)) 
+            file_num += 1
         # child = Process(target=processConnection, args=(conn,))
         child.start()
         print("Received connection from: " + str(addr[0]))
     s.close()
 
 if __name__ == "__main__":
-    # server_thread = threading.Thread(target=TCPserver, args=(socket.gethostname(),DEVICES_LISTEN_PORT,))
-    # server_thread.start()
-    print("before socket")
+    server_thread = threading.Thread(target=TCPserver, args=("0.0.0.0",DEVICES_LISTEN_PORT,"rpi",))
+    server_thread.start()
     rpi_socket = tcp.TCPsocket()
-    print(socket.gethostname())
-    print(socket.gethostbyname(socket.gethostname()))
-    # rpi_socket.listen(socket.gethostbyname(socket.gethostname()), RPI_LISTEN_PORT)
     rpi_socket.listen("0.0.0.0", RPI_LISTEN_PORT)
-    # volume = 5
-    print("after listen")
     file_count = 0
     while True:
         message = input("What do you want to send: ")

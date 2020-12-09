@@ -18,7 +18,8 @@ HOME_DIREC = "/home/pi/"
 """ ******************** TCP GLOBALS ******************** """
 TCP_IP = "192.168.86.26"
 AWS_IP = "54.187.194.13"
-TCP_PORT = 5005
+AWS_COMMAND_PORT = 5005
+AWS_FILE_PORT = 5006
 """ ************************v**************************** """
 
 """ ******************** SONG GLOBALS ******************** """
@@ -101,7 +102,7 @@ def cleanUpRecordings(current_num):
 def controlInterface(command_lock, record_lock):
 	try:
 		AWS_socket = tcp.TCPsocket()
-		AWS_socket.connect(AWS_IP, TCP_PORT)
+		AWS_socket.connect(AWS_IP, AWS_COMMAND_PORT)
 		while True:
 			message = AWS_socket.receiveMessage()
 			if message.lower() == "file":
@@ -131,7 +132,10 @@ def startMusic(song_num):
 		SONG_NUM = 0
 	return music_child
 		
-
+def sendRecording(file_path):
+	AWS_socket = tcp.TCPsocket()
+	AWS_socket.connect(AWS_IP, AWS_FILE_PORT)
+	AWS_socket.sendFile(file_path)
 
 if __name__ == '__main__':
 	music_child = startMusic(SONG_NUM)
@@ -164,9 +168,9 @@ if __name__ == '__main__':
 			music_child = startMusic(SONG_NUM)
 		
 		if not COMMAND_QUEUE.empty():
-			command_lock.acquire()
+			# command_lock.acquire()
 			message = COMMAND_QUEUE.get()
-			command_lock.release()
+			# command_lock.release()
 			if message.lower() == "stop":
 				music_child.terminateProcess()
 				# command_thread.raise_exception()
@@ -192,3 +196,8 @@ if __name__ == '__main__':
 			# x = spawnThread(RecordChild,lock=[record_lock],params=[RECORDING_LENGTH,"rec{}".format(REC_COUNT)] )
 			x = threading.Thread(target=RecordChild, args=(record_lock, RECORDING_LENGTH,"rec{}".format(REC_COUNT)))
 			x.start()
+
+		if not RECORD_QUEUE.empty():
+			x = threading.Thread(target=sendRecording, args=(RECORD_QUEUE.get(),))
+			x.start()
+			# sendRecording(RECORD_QUEUE.get())
