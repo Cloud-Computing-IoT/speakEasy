@@ -51,7 +51,8 @@ if __name__ == "__main__":
     rpi_socket = tcp.TCPsocket()
     print(socket.gethostname())
     print(socket.gethostbyname(socket.gethostname()))
-    rpi_socket.listen(socket.gethostname(), RPI_LISTEN_PORT)
+    # rpi_socket.listen(socket.gethostname(), RPI_LISTEN_PORT)
+    rpi_socket.listen("0.0.0.0", RPI_LISTEN_PORT)
     # volume = 5
     print("after listen")
 
