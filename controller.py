@@ -47,10 +47,11 @@ def TCPserver(TCP_IP, TCP_PORT):
 if __name__ == "__main__":
     # server_thread = threading.Thread(target=TCPserver, args=(socket.gethostname(),DEVICES_LISTEN_PORT,))
     # server_thread.start()
-
+    print("before socket")
     rpi_socket = tcp.TCPsocket()
     rpi_socket.listen(socket.gethostname(), RPI_LISTEN_PORT)
     # volume = 5
+    print("after socket")
 
     while True:
         message = input("What do you want to send: ")
