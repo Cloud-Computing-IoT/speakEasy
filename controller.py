@@ -27,7 +27,11 @@ def processConnection(socket, addr):
     except:
         print("Error: message not received")
     parseObject(data, addr)
-    socket.close()
+    try:
+        socket.shutdown()
+        socket.close()
+    except Exception:
+        pass
 
 def TCPserver(TCP_IP, TCP_PORT):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
