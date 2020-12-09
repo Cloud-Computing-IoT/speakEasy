@@ -6,7 +6,7 @@ import threading
 
 NUM_CONN = 5
 BUFFER_SIZE = 1024
-
+FILE_NUM = 0
 
 def processFile(socket, addr, filePath):
     try:
@@ -42,5 +42,4 @@ if __name__ == "__main__":
     inputs = sys.argv
     LISTENING_PORT = inputs[1]
     FILE_PATH = inputs[2]
-    FILE_NUM = 0
     TCPserver("0.0.0.0",LISTENING_PORT)
