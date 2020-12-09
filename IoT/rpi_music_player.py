@@ -43,7 +43,7 @@ SONG_NUM = 0
 """ ******************************************************* """
 
 """ ******************** RECORDING GLOBALS ******************** """
-RECORD_COMMAND = "arecord -D hw:1,0 -d {time} -f cd {file_path}{file}.wav"
+RECORD_COMMAND = "arecord -D hw:2,0 -d {time} -f cd {file_path}{file}.wav"
 FILE_LIMIT = 5					#File limit local sttorage
 FINISHED_RECORDING = 1			#Flag to start new recording
 RECORDING_LENGTH = 2			#Recording duration in seconds
