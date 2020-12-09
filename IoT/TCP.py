@@ -67,9 +67,9 @@ class TCPsocket:
     def connect(self, TCP_IP, TCP_PORT):
         try:
             self.s.connect((TCP_IP,TCP_PORT))
-            print("Connected to " + TCP_IP)
+            print("Connected to " + TCP_IP + " on port " + TCP_PORT)
         except:
-            print("error connection to socket.")
+            print("error connecting to socket on port " + TCP_PORT)
 
     def listen(self, TCP_IP, TCP_PORT):
         try:

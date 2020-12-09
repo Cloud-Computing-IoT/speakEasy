@@ -128,7 +128,8 @@ def controlInterface():
 			else:
 				AWS_socket.sendMessage("Invalid command: " + message)
 	except:
-		print("Lost connection to AWS")
+		print("Lost connection to AWS control interface")
+		global LOST_CONNECTION_FLAG
 		LOST_CONNECTION_FLAG = 1
 		
 # Function called in main loop to invokes speaker process for playing a song.
