@@ -61,6 +61,8 @@ if __name__ == "__main__":
         rpi_socket.sendMessage(message)
         if message == "file":
             rpi_socket.receiveFile("/Users/matthewpisini/Desktop/dummy.txt")
+        elif message == "stop":
+            rpi_socket.closeSocket()
         else:
             data = rpi_socket.receiveMessage()
             print(data)
