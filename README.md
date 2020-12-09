@@ -1,6 +1,7 @@
 # speakEasy
 
 Final Project for EE 542 at the University of Southern California
+
 Matt Pisini, Charlie Bennett, Tristan Elma
 
 speakEasy is a smart speaker controller that adjusts speaker volume in real-time, based on audio and accelerometer data collected from the area around it. This code was designed and tested on an Amazon EC2 instance (t2.xlarge) running Ubuntu 16.04, interfacing with an RPi that is connected to the speaker and microphone, as well as Android phones which gather accelerometer data through Termux and communicate it to the cloud using Netcat.
