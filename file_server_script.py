@@ -42,4 +42,4 @@ if __name__ == "__main__":
     inputs = sys.argv
     LISTENING_PORT = inputs[1]
     FILE_PATH = inputs[2]
-    TCPserver("0.0.0.0",LISTENING_PORT)
+    TCPserver("0.0.0.0",int(LISTENING_PORT))
