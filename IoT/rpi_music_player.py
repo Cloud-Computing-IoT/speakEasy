@@ -1,3 +1,13 @@
+"""
+Author: Matt Pisini 
+Date: 12/8/20
+
+Description:
+Runs the 
+
+Inputs (via CLI):
+
+"""
 import os
 import time
 import sys
@@ -20,6 +30,7 @@ TCP_IP = "192.168.86.26"
 AWS_IP = "54.187.194.13"
 AWS_COMMAND_PORT = 5005
 AWS_FILE_PORT = 5006
+LOST_CONNECTION_FLAG = 0
 """ ************************v**************************** """
 
 """ ******************** SONG GLOBALS ******************** """
@@ -54,7 +65,8 @@ COMMAND_QUEUE = Queue()
 
 ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.00235903263092041,      0.002854257822036743,      1.02996826171875E-4    ]  }}'
 
-
+# This spawns a process to manage playing music to the speaker.
+# Commands can be sent via the CLI to adjust control of the speaker.
 class MusicChild:
 	def __init__(self, sample_music):
 		self.child = pexpect.spawn('omxplayer --vol -1800 ' + MUSIC_PATH.format(music = sample_music))
@@ -72,10 +84,12 @@ class MusicChild:
 	def terminateProcess(self):
 		self.child.close()
 
+# This class spawns a process to record for 'record_time' and save to 'file_name' path.
+# The recording's 'file_name' is added to a global queue for transmission to AWS.
+# The process will automatically terminate upon finishing recording.
 class RecordChild:
 	def __init__(self, record_time, file_name):
 		global FINISHED_RECORDING
-		# FINISHED_RECORDING = 0
 		print("starting recording")
 		self.child = pexpect.spawn(RECORD_COMMAND.format(time = record_time, file_path = HOME_DIREC, file = file_name))
 		self.child.expect(pexpect.EOF)
@@ -86,15 +100,15 @@ class RecordChild:
 		if REC_COUNT >= FILE_LIMIT:
 			cleanUpRecordings(REC_COUNT-FILE_LIMIT)
 		FINISHED_RECORDING = 1
-		# this process will automatically terminate after it records for 'record_time'
-		# maybe add automatically sending the file and deleting it?
 
-#keeps the last FILE_LIMIT recordings in home directory
+# Function deletes all recordings except for the last FILE_LIMIT
+# recordings in home directory.
 def cleanUpRecordings(current_num):
 	for file in os.listdir(HOME_DIREC):
 		if "rec{}".format(current_num) in file:
 			os.remove(os.path.join(HOME_DIREC, file))
 
+# This function
 def controlInterface():
 	try:
 		AWS_socket = tcp.TCPsocket()
@@ -113,6 +127,7 @@ def controlInterface():
 				AWS_socket.sendMessage("Invalid command: " + message)
 	except:
 		print("Lost connection to AWS")
+		LOST_CONNECTION_FLAG = 1
 		
 
 def startMusic(song_num):
@@ -127,7 +142,10 @@ def startMusic(song_num):
 def sendRecording(file_path):
 	AWS_socket = tcp.TCPsocket()
 	AWS_socket.connect(AWS_IP, AWS_FILE_PORT)
-	AWS_socket.sendFile(file_path)
+	try:
+		AWS_socket.sendFile(file_path)
+	except:
+		print("Error sending file: " + file_path)
 
 if __name__ == '__main__':
 	music_child = startMusic(SONG_NUM)
@@ -167,3 +185,9 @@ if __name__ == '__main__':
 			#create thread which will send recording
 			x = threading.Thread(target=sendRecording, args=(RECORD_QUEUE.get(),))
 			x.start()
+		
+		# Attempt to restablish connection with the AWS instance
+		if LOST_CONNECTION_FLAG:
+			LOST_CONNECTION_FLAG = 0
+			command_thread = threading.Thread(target=controlInterface, args=())
+			command_thread.start()

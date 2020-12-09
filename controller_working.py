@@ -12,6 +12,9 @@ import os
 import math
 from statistics import mean
 
+FILE_SERVER_PORT = 5006
+RUN_FILE_SERVER = 'python3 file_server_script.py {}'.format(FILE_SERVER_PORT)
+
 def get_vector_mag(vector_input):
     #assuming m/s^2
     mag = sqrt(sum([x**2 for x in vector_input]))
@@ -196,6 +199,8 @@ class VolumeController:
 
 
 if __name__ == "__main__":
+    # run file server which saves files to '/home/ubuntu/EE542_final_project/recordings/'
+    os.system(RUN_FILE_SERVER)
     mainInterface = CentralIO()
     danceIOThread = threading.Thread(target = mainInterface.danceServer)
     danceIOThread.start()

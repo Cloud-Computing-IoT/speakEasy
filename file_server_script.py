@@ -1,5 +1,16 @@
-# Controller script for speaker
+"""
+Author: Matt Pisini 
+Date: 12/8/20
 
+Description:
+Runs the server thread that listens for connections from RPi.
+The files received are written to the 'recordings' directory.
+These files are accessed by the main script for audio processing.
+
+Inputs (via CLI):
+1. The port number to host connections
+
+"""
 import sys
 import socket
 import threading
@@ -7,6 +18,7 @@ import threading
 NUM_CONN = 5
 BUFFER_SIZE = 1024
 FILE_NUM = 0
+FILE_PATH = "/home/ubuntu/EE542_final_project/recordings/"
 
 def processFile(socket, addr, filePath):
     try:
@@ -20,7 +32,7 @@ def processFile(socket, addr, filePath):
     f.close()
 
 
-def TCPserver(TCP_IP, TCP_PORT, FILE_PATH):
+def TCPserver(TCP_IP, TCP_PORT):
     global FILE_NUM
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     try:
@@ -41,5 +53,4 @@ def TCPserver(TCP_IP, TCP_PORT, FILE_PATH):
 if __name__ == "__main__":
     inputs = sys.argv
     LISTENING_PORT = inputs[1]
-    FILE_PATH = inputs[2]
-    TCPserver("0.0.0.0",int(LISTENING_PORT), FILE_PATH)
+    TCPserver("0.0.0.0",int(LISTENING_PORT))

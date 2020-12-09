@@ -10,16 +10,15 @@ from queue import Queue
 import json
 
 SERVER_MESSAGE_Q = Queue()
-RPI_LISTEN_PORT = 5005
 DEVICES_LISTEN_PORT = 5006
 NUM_CONN = 5
 BUFFER_SIZE = 1024
-FILE_PATH = "/home/ubuntu/EE542_final_project/"
 
 def parseObject(message, addr):
     new_message = json.loads(message)
     nums = {}
     nums[str(addr[0])] = new_message["linear_acceleration"]["values"] #list of 3 accel values 
+    print(nums)
     SERVER_MESSAGE_Q.put(nums)
 
 def processConnection(socket, addr):
@@ -28,25 +27,9 @@ def processConnection(socket, addr):
     except:
         print("Error: message not received")
     parseObject(data, addr)
-    # SERVER_MESSAGE_Q.put(data.decode())
 
-def processFile(socket, addr, filePath):
-    try:
-        f = open(filePath, 'wb')
-    except:
-        print("error opening file for writing: " + filePath)
-    data = socket.recv(BUFFER_SIZE)
-    while(data):
-        f.write(data)
-        # if len(data) < BUFFER_SIZE:
-        #     break
-        data = socket.recv(BUFFER_SIZE)
-    f.close()
-
-file_num = 0
-def TCPserver(TCP_IP, TCP_PORT, KEY):
+def TCPserver(TCP_IP, TCP_PORT):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    global file_num
     try:
         s.bind((TCP_IP, TCP_PORT))
         s.listen(NUM_CONN)
@@ -56,38 +39,33 @@ def TCPserver(TCP_IP, TCP_PORT, KEY):
         sys.exit(1)
     while True:
         conn, addr = s.accept()
-        if KEY == "devices":
-            child = threading.Thread(target=processConnection, args=(conn,addr,))
-        else:
-            child = threading.Thread(target=processFile, args=(conn,addr,"{}{}.wav".format(FILE_PATH,file_num),)) 
-            file_num += 1
-        # child = Process(target=processConnection, args=(conn,))
+        child = threading.Thread(target=processConnection, args=(conn,addr,))
         child.start()
         print("Received connection from: " + str(addr[0]))
     s.close()
 
 if __name__ == "__main__":
-    server_thread = threading.Thread(target=TCPserver, args=("0.0.0.0",DEVICES_LISTEN_PORT,"rpi",))
+    server_thread = threading.Thread(target=TCPserver, args=("0.0.0.0",DEVICES_LISTEN_PORT,))
     server_thread.start()
-    rpi_socket = tcp.TCPsocket()
-    rpi_socket.listen("0.0.0.0", RPI_LISTEN_PORT)
-    file_count = 0
-    while True:
-        message = input("What do you want to send: ")
-        rpi_socket.sendMessage(message)
-        if message == "file":
-            rpi_socket.receiveFile("/home/ubuntu/EE542_final_project/{}.wav".format(file_count))
-            file_count += 1
-        elif message == "stop":
-            rpi_socket.closeSocket()
-            sys.exit(1)
-        else:
-            data = rpi_socket.receiveMessage()
-            print(data)
-            if "Terminating" in data:
-                rpi_socket.closeSocket()
-                print("Finished listening")
-                sys.exit(1)
+    # rpi_socket = tcp.TCPsocket()
+    # rpi_socket.listen("0.0.0.0", RPI_LISTEN_PORT)
+    # file_count = 0
+    # while True:
+    #     message = input("What do you want to send: ")
+    #     rpi_socket.sendMessage(message)
+    #     if message == "file":
+    #         rpi_socket.receiveFile("/home/ubuntu/EE542_final_project/{}.wav".format(file_count))
+    #         file_count += 1
+    #     elif message == "stop":
+    #         rpi_socket.closeSocket()
+    #         sys.exit(1)
+    #     else:
+    #         data = rpi_socket.receiveMessage()
+    #         print(data)
+    #         if "Terminating" in data:
+    #             rpi_socket.closeSocket()
+    #             print("Finished listening")
+    #             sys.exit(1)
 
     """
     while(True):
