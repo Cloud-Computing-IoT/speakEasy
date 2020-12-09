@@ -30,7 +30,9 @@ def processConnection(socket, addr):
     try:
         socket.shutdown()
         socket.close()
+        print("closed connection: " + addr)
     except Exception:
+        print("Error closing")
         pass
 
 def TCPserver(TCP_IP, TCP_PORT):
