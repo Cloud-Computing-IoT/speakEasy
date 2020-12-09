@@ -17,6 +17,7 @@ HOME_DIREC = "/home/pi/"
 
 """ ******************** TCP GLOBALS ******************** """
 TCP_IP = "192.168.86.26"
+AWS_IP = "54.187.194.13"
 TCP_PORT = 5005
 """ ************************v**************************** """
 
@@ -100,7 +101,7 @@ def cleanUpRecordings(current_num):
 def controlInterface(command_lock, record_lock):
 	try:
 		AWS_socket = tcp.TCPsocket()
-		AWS_socket.connect(TCP_IP, TCP_PORT)
+		AWS_socket.connect(AWS_IP, TCP_PORT)
 		while True:
 			message = AWS_socket.receiveMessage()
 			if message.lower() == "file":
