@@ -22,18 +22,19 @@ def parseObject(message, addr):
     SERVER_MESSAGE_Q.put(nums)
 
 def processConnection(socket, addr):
-    try:
-        data = socket.recv(BUFFER_SIZE)
-    except:
-        print("Error: message not received")
-    parseObject(data, addr)
-    try:
-        socket.shutdown()
-        socket.close()
-        print("closed connection: " + addr)
-    except Exception:
-        print("Error closing")
-        pass
+    while True:
+        try:
+            data = socket.recv(BUFFER_SIZE)
+        except:
+            print("Error: message not received")
+        parseObject(data, addr)
+        # try:
+        #     socket.shutdown()
+        #     socket.close()
+        #     print("closed connection: " + addr)
+        # except Exception:
+        #     print("Error closing")
+        #     pass
 
 def TCPserver(TCP_IP, TCP_PORT):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
