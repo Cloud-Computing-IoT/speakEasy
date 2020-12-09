@@ -49,7 +49,8 @@ if __name__ == "__main__":
     # server_thread.start()
     print("before socket")
     rpi_socket = tcp.TCPsocket()
-    print("after socket")
+    print(socket.gethostname())
+    print(socket.gethostbyname(socket.gethostname()))
     rpi_socket.listen(socket.gethostname(), RPI_LISTEN_PORT)
     # volume = 5
     print("after listen")
