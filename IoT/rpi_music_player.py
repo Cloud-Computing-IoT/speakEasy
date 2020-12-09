@@ -38,7 +38,10 @@ MUSIC_PATH = "/home/pi/{music}"
 SONG0 = "mp3_test.mp3"
 SONG1 = "Lite_Weight.mp3"
 SONG2 = "24kGoldn.mp3"
-SONG_LIST = [SONG0, SONG1, SONG2]
+SONG3 = "Ah_Bellaire.mp3"
+SONG4 = "City_of_stars.mp3"
+SONG5 = "Pure_Imagination.mp3"
+SONG_LIST = [SONG0, SONG1, SONG2, SONG3, SONG4, SONG5]
 SONG_NUM = 0
 """ ******************************************************* """
 
@@ -64,6 +67,7 @@ COMMANDS = [VOLUME_DOWN, VOLUME_UP, PAUSE, NEXT, STOP, FAST_FORWARD, REWIND]
 COMMAND_QUEUE = Queue()
 """ *************************************************************** """
 
+"""we start at volume 12 (-18dB) range is [-51dB, 6dB]"""
 ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.00235903263092041,      0.002854257822036743,      1.02996826171875E-4    ]  }}'
 
 # This class spawns a process to manage playing music to the speaker.
