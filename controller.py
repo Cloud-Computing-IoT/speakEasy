@@ -47,8 +47,7 @@ def TCPserver(TCP_IP, TCP_PORT):
 if __name__ == "__main__":
     server_thread = threading.Thread(target=TCPserver, args=("0.0.0.0",DEVICES_LISTEN_PORT,))
     server_thread.start()
-    # rpi_socket = tcp.TCPsocket()
-    # rpi_socket.listen("0.0.0.0", RPI_LISTEN_PORT)
+    
     # file_count = 0
     # while True:
     #     message = input("What do you want to send: ")

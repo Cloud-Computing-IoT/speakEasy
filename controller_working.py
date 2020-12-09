@@ -201,6 +201,10 @@ class VolumeController:
 if __name__ == "__main__":
     # run file server which saves files to '/home/ubuntu/EE542_final_project/recordings/'
     os.system(RUN_FILE_SERVER)
+    #start controller socket with RPi
+    rpi_socket = tcp.TCPsocket()
+    rpi_socket.listen("0.0.0.0", RPI_LISTEN_PORT)
+    
     mainInterface = CentralIO()
     danceIOThread = threading.Thread(target = mainInterface.danceServer)
     danceIOThread.start()
