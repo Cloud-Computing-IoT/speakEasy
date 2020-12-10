@@ -37,9 +37,9 @@ LOST_CONNECTION_FLAG = 0		#Flag if conneection to AWS is lost
 """ ******************** SONG GLOBALS ******************** """
 MUSIC_PATH = "/home/pi/{music}"
 SONG1 = "DPunk.mp3"
-SONG0 = "Lite_Weight.mp3"
+SONG3 = "Lite_Weight.mp3"
 SONG2 = "24kGoldn.mp3"
-SONG3 = "Ah_Bellaire.mp3"
+SONG0 = "Ah_Bellaire.mp3"
 SONG4 = "City_of_stars.mp3"
 SONG5 = "Pure_Imagination.mp3"
 SONG_LIST = [SONG0, SONG1, SONG2, SONG3, SONG4, SONG5]
@@ -76,7 +76,7 @@ ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.0023590326309204
 class MusicChild:
 	def __init__(self, sample_music):
 		# We start at volume 12 (-18dB) range is [-51dB, 6dB] (20 increments)
-		self.child = pexpect.spawn('omxplayer --vol -600 ' + MUSIC_PATH.format(music = sample_music))
+		self.child = pexpect.spawn('omxplayer --vol -300 ' + MUSIC_PATH.format(music = sample_music))
 		self.child.expect(OMXPLAYER_START)
 
 	def changeMusicOutput(self, command):
