@@ -67,13 +67,14 @@ COMMANDS = [VOLUME_DOWN, VOLUME_UP, PAUSE, NEXT, STOP, FAST_FORWARD, REWIND]
 COMMAND_QUEUE = Queue()
 """ *************************************************************** """
 
-"""we start at volume 12 (-18dB) range is [-51dB, 6dB]"""
+
 ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.00235903263092041,      0.002854257822036743,      1.02996826171875E-4    ]  }}'
 
 # This class spawns a process to manage playing music to the speaker.
 # Commands can be sent via the CLI to adjust control of the speaker.
 class MusicChild:
 	def __init__(self, sample_music):
+		# We start at volume 12 (-18dB) range is [-51dB, 6dB] (20 increments)
 		self.child = pexpect.spawn('omxplayer --vol -1800 ' + MUSIC_PATH.format(music = sample_music))
 		self.child.expect(OMXPLAYER_START)
 
@@ -167,6 +168,8 @@ if __name__ == '__main__':
 	command_thread = threading.Thread(target=controlInterface, args=())
 	command_thread.start()
 
+	MIN_VOLUME_REACHED = 0
+	MAX_VOLUME_REACHED = 0
 	# Main loop: handles speaker control, spawning speaker processes, 
 	# recording processes, sending recordings, and connection restablishment.
 	while True:
@@ -186,9 +189,25 @@ if __name__ == '__main__':
 			elif message.lower() == "next":
 				music_child.terminateProcess()
 				music_child = startMusic(SONG_NUM)
-			elif message == "=" or "-" or " ":
+			elif message == " ": #pause music
 				output = music_child.changeMusicOutput(message)
+			elif message == "=": #increase volume
+				if not MAX_VOLUME_REACHED:
+					output = music_child.changeMusicOutput(message)
+				if output == "Current Volume: 6.00dB":
+					MAX_VOLUME_REACHED = 1
+				if MIN_VOLUME_REACHED:
+					MIN_VOLUME_REACHED = 0
 				print(output)
+			elif message == "-": #decrease volume
+				if not MIN_VOLUME_REACHED:
+					output = music_child.changeMusicOutput(message)
+				if output == "Current Volume: -51.00dB":
+					MIN_VOLUME_REACHED = 1
+				if MAX_VOLUME_REACHED:
+					MAX_VOLUME_REACHED = 0
+				print(output)
+			
 
 		# Start new recording process if last recording has finished.
 		if FINISHED_RECORDING == 1:
