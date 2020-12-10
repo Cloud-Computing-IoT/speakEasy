@@ -1,6 +1,9 @@
 # Controller script for speaker
-
+#hey whats up
 from audio_analyzer import analyze_audio
+import sys
+sys.path.append("/home/ubuntu/EE542_final_project/Cloud-Enabled-Smart-Speaker/IoT")
+
 import TCP as tcp
 import socket
 import threading
@@ -11,41 +14,49 @@ import queue
 import os
 import math
 from statistics import mean
+import numpy as np
+import random
+from multiprocessing import Process
+from contextlib import contextmanager
+from subprocess import Popen, PIPE, STDOUT
+from time import sleep, time
+from matplotlib import pyplot as plt
+import tensorflow as tf
+tf.logging.set_verbosity(tf.logging.ERROR)
 
+
+AUDIO_FILE_NAME = "input.wav"
+RECORDINGS_DIRECTORY = "/home/ubuntu/EE542_final_project/recordings"
+AUDIO_FILE_PATH = os.path.join(RECORDINGS_DIRECTORY, AUDIO_FILE_NAME)
 FILE_SERVER_PORT = 5006
 RUN_FILE_SERVER = 'python3 file_server_script.py {}'.format(FILE_SERVER_PORT)
+VISUALIZER_PORT = 6969
+IP = "0.0.0.0"
+
 
 def get_vector_mag(vector_input):
     #assuming m/s^2
     mag = sqrt(sum([x**2 for x in vector_input]))
     return mag - 9.8
 
-def parseObject(message, addr):
-    new_message = json.loads(message)
-    nums = {}
-    nums[str(addr[0])] = new_message["linear_acceleration"]["values"]  # list of 3 accel values
-    SERVER_MESSAGE_Q.put(nums)
-
-
-def processConnection(socket, addr):
-    try:
-        data = socket.recv(BUFFER_SIZE)
-    except:
-        print("Error: message not received")
-    parseObject(data, addr)
-    # SERVER_MESSAGE_Q.put(data.decode())
 
 
 class CentralIO:
-    def __init__(self, IP, audio_port, dance_port):
+    def __init__(self, IP = "0.0.0.0", volume_port = 5005, dance_port=4204):
         self.IP = IP
         self.dance_port = dance_port
+        self.volume_port = volume_port
         self.danceDataQueue = queue.Queue()
         self.audioFileQueue = queue.Queue()
         self.commandQueue = queue.Queue()
-        self.voiceConnection = TCPSocket()
-        self.voiceConnection.connect(self.IP, self.audio_port)
-        self.base_path = ""
+        self.audioConnection = tcp.TCPsocket()
+        #get rid of this try block
+        try:
+            self.audioConnection.listen(self.IP, self.volume_port)
+        except:
+            print("WTFWTFWTF")
+            pass
+
 
     def danceServer(self):
         TCP_IP = self.IP
@@ -77,20 +88,15 @@ class CentralIO:
             nums[str(addr[0])] = new_message["linear_acceleration"]["values"]  # list of 3 accel values
             self.danceDataQueue.put(nums)
     def audioIO(self):
-        file_id = 0
         while True:
-            #recieve file
-            file_name = os.path.join(self.base_path, "%d.wav"%(file_id))
-            self.audioConnection.recieveFile(file_name)
-            file_id += 1
-            self.audioFileQueue.put(file_name)
             #check for commands to send
             while not self.commandQueue.empty():
-                self.voiceConnection.sendMessage(self.commandQueue.get())
+                pass
+                self.audioConnection.sendMessage(self.commandQueue.get())
         self.audioConnection.closeSocket()
 
 class VolumeController:
-    def __init__(self, starting_volume):
+    def __init__(self, starting_volume = 5):
         self.proposed_volume = 5
         self.current_volume = 5
         self.bias_volume = 5
@@ -105,8 +111,7 @@ class VolumeController:
                                 "music": 137, "musical_insturment": 138}
         self.featureWeights = {"speech": -1, "conversation": -1, "laughter": +1, "cheering": +1,
                                 "music": 0, "musical_insturment": 0, "dance": 1}
-        self.audio_class_threshold = .1
-        self.dance_threshold = 10
+
 
         # moving average filter if needed
         self.audio_buffer_length = 3
@@ -125,19 +130,14 @@ class VolumeController:
         self.scale = .5
         self.L = 1
 
-    def audio_input(self, results):
-        self.voiceBuffers
-        for key, value in self.audioFeatures:
-            self.audioBuffers[key].append(results[key])
-            if len(self.audioBuffers[key]) > self.audio_buffer_length:
-                self.audioBuffers[key] = self.audioBuffers[key][1:]
-    def processDance(self, results):
+
+    def inputDance(self, results):
 
         self.danceStorage = {}
         self.dance_storage_ttl = 10
         runsum = 0.0
         # not sure if well need this dance storage but just in case
-        for person, value in results:
+        for person, value in results.items():
             mag = get_vector_mag(value)
             runsum += mag
             if person in self.danceStorage.keys():
@@ -150,28 +150,47 @@ class VolumeController:
         self.danceBuffer.append(runsum/len(results))
         if len(self.danceBuffer) > self.dance_buffer_length: 
             self.danceBuffer = self.danceBuffer[1:]
-        return self.getVolumeChange()
+        return self._process()
 
-    def processAudio(self):
-        value = 0
-        # conversation makes volume go up no matter what
-        #audio_values = {param : (mean(self.audioBuffers[param]) > self.audio_class_threshold)
-                        #for param in self.audioFeatures.keys()}
-        values = {param : (mean(self.audioBuffers[param]) for param in self.audioFeatures.keys()}
-        values["dance"] = mean(self.danceBuffer)
+    def inputAudio(self, results):
+        for key, value in self.audioFeatures.items():
+            self.audioBuffers[key].append(results[value])
+            if len(self.audioBuffers[key]) > self.audio_buffer_length:
+                self.audioBuffers[key] = self.audioBuffers[key][1:]
+        return self._process()
+
+    def _process(self):
+        values = {param : (mean(self.audioBuffers[param])) for param in self.audioFeatures.keys()}
+        for key, value in values.items():
+            print(key, value)
+        try:
+            values["dance"] = mean(self.danceBuffer)
+        except:
+            #empty array rn
+            values["dance"] = 0
+        try:
+            output_string = ""
+            for key, value in values.items():
+                output_string += " %s  %.4f "%(key, value)
+            visualizer.sendMessage(output_string)
+        except Exception as inst:
+            print(type(inst))
+            print(inst)
+            pass
         new_value = sum([values[key]*self.featureWeights[key] for key in self.audioFeatures.keys()])
         self.raw_values.append(new_value)
-        for old_value in self.raw_values[:-1]:
-            if (abs(new_value - old_value) > self.threshold):
-                self.current_volume += (new_value - old_value)*self.get_bias_function((new_value - old_value))
-                return self.current_volume
-        return self.getVolumeChange
-    def getVolumeChange(self):
+        for old_value in (self.raw_values[:-1]):
+            some_value = old_value
+            if self.threshold < abs(new_value - some_value):
+                self.proposed_volume += self.current_volume + self._getBiasFunction((new_value - old_value))
+                return self._getVolumeChange()
+        return 0
+    def _getVolumeChange(self):
         delta = self.proposed_volume - self.current_volume
         self.proposed_volume = self.current_volume
         self.raw_values = self.raw_values[-1:] #dont need past values anymore
+        print("New value of delta %f"%(delta))
         return delta
-
 
     def _getBiasFunction(self, proposed_delta):
 
@@ -179,50 +198,102 @@ class VolumeController:
         # We bias towards volume 5
         #direction = 1: moving towards the mean, accelerate more the farther we are away
         #direction = 0 moving away from the mean, accelerate less the farther we get away
-        direction =  ((proposed_delta * (self.bias_volume - self.current_volume)) > 0)
+        direction = abs(self.bias_volume - self.current_volume - proposed_delta) < abs(self.bias_volume - self.current_volume)
 
-        x = (self.current_volume - self.x_not)*(-self.scale)
-        denom = (math.exp(x) + 1)**2
+        x = math.exp((self.current_volume - self.x_not)*(-self.scale))
+        denom = (x + 1)**2
         num = self.scale*self.L*x
-
         if direction:
-            return 1 - (num/denom)
+            return max(min(1 - (num/denom), 1), 0)*proposed_delta
         else:
-            return num/denom
+            return max(min(num/denom, 1), 0)*proposed_delta
+
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
 
 
 
+def runFileServer():
+
+    a = Popen(RUN_FILE_SERVER, shell=True, stdin=PIPE, stdout=PIPE, stderr=STDOUT)
 
 
 
+    print("File Server Process Launched", a.pid)
+    start = time()
+    while a.poll() == None or time()-start <= 30: #30 sec grace period
+        sleep(0.25)
+    if a.poll() == None:
+        print('Still running, killing')
+        a.kill()
+    else:
+        print('exit code:',a.poll())
+    output = a.stdout.read()
+    a.stdout.close()
+    a.stdin.close()
+    return output
 
 
+
+##########################################
+#MAIN
+##########################################
 
 if __name__ == "__main__":
-    # run file server which saves files to '/home/ubuntu/EE542_final_project/recordings/'
-    os.system(RUN_FILE_SERVER)
-    #start controller socket with RPi
-    rpi_socket = tcp.TCPsocket()
-    rpi_socket.listen("0.0.0.0", RPI_LISTEN_PORT)
-    
+    begin_flag = 1
+    audioStream = threading.Thread(target = runFileServer) # should this be processs or thread ?
+    audioStream.start()
+    visualizer = tcp.TCPsocket()
+    visualizerThread = threading.Thread(target = visualizer.listen,
+                                        args = [IP, VISUALIZER_PORT])
+    visualizerThread.start()
+
     mainInterface = CentralIO()
     danceIOThread = threading.Thread(target = mainInterface.danceServer)
-    danceIOThread.start()
+    #danceIOThread.start()
     volumeControl = VolumeController()
-    audioThread = threading.Thread(target = mainInterface.audioIO)
+    audioIOThread = threading.Thread(target = mainInterface.audioIO)
+    audioIOThread.start()
     volume = 5 # set this as the begining
+    epoch = 0
     while (True):
 
-        while not mainInterface.audioFileQueue.empty(): 
-            input_audio_file = mainInterface.audioFileQueue.get()
-            results = analyze_audio.run(input_audio_file)
-            delta = volumeControl.processAudio(results)
-            # check for volume change each time for low latency
-            if delta:
-                mainInterface.commandQueue.put(delta)
+        epoch += 1
+        print("epoch = %d"%(epoch))
+        #for filename in os.listdir(RECORDINGS_DIRECTORY):
+        #    if filename.endswith(".wav"):
+        #current_file = os.path.join(RECORDINGS_DIRECTORY, filename)
+        #os.path.rename(current_file, AUDIO_FILE_PATH)
+        #with suppress_stdout():
+        results = analyze_audio.run("Another_day_w_voice_close.wav", begin_flag)
 
-        while not mainInterface.danceDataQueue():
+        begin_flag = 0
+        #print("current file is %s" % (current_file))
+        #debug
+        #results = {random.randint(1, 100) : val for val in volumeControl.audioFeatures.values()}
+        temp = [results[val] for val in volumeControl.audioFeatures.values()]
+        print(results)
+        delta = volumeControl.inputAudio(results)
+        if delta:
+            mainInterface.commandQueue.put(delta)
+        #                os.remove(current_file)
+
+
+        while not mainInterface.danceDataQueue.empty():
+
             delta = volumeControl.processDance(volumeControl.mainInterface.danceDataQueue.get())
             if delta:
                 mainInterface.commandQueue.put(delta)
 
+
+    audioStream.join()
+    #danceIOThread.join()
+    audioIOThread.join()
+    visualizerThread.join()
