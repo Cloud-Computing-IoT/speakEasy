@@ -23,6 +23,7 @@ import pexpect
 import TCP as tcp
 import threading
 from queue import Queue
+import time
 
 HOME_DIREC = "/home/pi/"		#Path to RPi home directory
 
@@ -49,7 +50,7 @@ SONG_NUM = 0
 RECORD_COMMAND = "arecord -D hw:2,0 -d {time} -f cd {file_path}{file}.wav"
 FILE_LIMIT = 5					#File limit local sttorage
 FINISHED_RECORDING = 1			#Flag to start new recording
-RECORDING_LENGTH = 2			#Recording duration in seconds
+RECORDING_LENGTH = 5			#Recording duration in seconds
 REC_COUNT = 0					#Current recording number
 RECORD_QUEUE = Queue()			#Queue to store recording paths
 """ *********************************************************** """
@@ -102,6 +103,7 @@ class RecordChild:
 		global REC_COUNT, RECORD_QUEUE
 		print("finished recording {}".format(REC_COUNT))
 		RECORD_QUEUE.put("{}{}.wav".format(HOME_DIREC,file_name))
+		time.sleep(5)
 		REC_COUNT += 1
 		if REC_COUNT >= FILE_LIMIT:
 			cleanUpRecordings(REC_COUNT-FILE_LIMIT)
