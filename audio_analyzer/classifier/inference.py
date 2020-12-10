@@ -27,8 +27,6 @@ import time
 import numpy as np
 
 from audio_analyzer.classifier import readers
-from audio_analyzer.classifier import utils
-
 from six.moves import urllib
 import tensorflow as tf
 from tensorflow import app
@@ -36,6 +34,7 @@ from tensorflow import flags
 from tensorflow import gfile
 from tensorflow import logging
 from tensorflow.python.lib.io import file_io
+from audio_analyzer.classifier import utils
 
 FLAGS = flags.FLAGS
 
@@ -350,8 +349,9 @@ def inference(reader, train_dir, data_pattern, out_file_location, batch_size,
     sess.close()
 
 
-def main():
-  init()
+def classify_run1(begin_flag):
+  if(begin_flag):
+    init()
   #logging.set_verbosity(tf.logging.ERROR)
   if FLAGS.input_model_tgz:
     if FLAGS.train_dir:

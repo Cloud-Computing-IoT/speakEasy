@@ -1,24 +1,9 @@
-# Reguirements:
-# Python 3.7, TensorFlow 1.14, numpy, resampy, tf_slim, six, soundfile
+# ENSURE YOU ARE USING TENSORFLOW 1.14
 #
-# Usage example:
+# USE:
+#
 # import analyze_audio
 # results_dict = analyze_audio.run("recording.wav")
-#
-# - Audio feature extractor adapted from the AudioSet project from Google:
-#     - GitHub: https://github.com/tensorflow/models/tree/master/research/audioset
-#     - Paper: https://research.google.com/pubs/pub45857.html
-#     - Authors:
-#         - Dan Ellis
-#         - Shawn Hershey
-#         - Aren Jansen
-#         - Manoj Plakal
-# - Classifier code adapted from YouTube-8M project from Google:
-#     - GitHub: https://github.com/google/youtube-8m
-#     - Paper: https://arxiv.org/abs/1609.08675
-
-# Wrapper interface to run both the feature extractor and classifier programs
-# to extract audio class information from an input audio recording
 
 import subprocess
 import pathlib
@@ -26,18 +11,21 @@ import os
 
 from audio_analyzer.classifier import inference
 
-def run(input_filename):
-    proj_dir = pathlib.Path(__file__).parent.absolute()
-
-    # Call feature extraction program
+def run(input_filename, begin_flag):
+    proj_dir = '/home/ubuntu/EE542_final_project/Cloud-Enabled-Smart-Speaker/audio_analyzer'
+    # Feature extraction
     subprocess.run([os.path.join(proj_dir, 'feature_extraction/vggish_inference_demo.py'),
                     '--wav_file', os.path.join(proj_dir, input_filename),
-                    '--tfrecord_file', 'extracted_features.tfrecord',
+                    '--tfrecord_file', os.path.join(proj_dir, 'extracted_features.tfrecord'),
                     '--pca_params', os.path.join(proj_dir, 'feature_extraction/vggish_pca_params.npz'),
-                    '--checkpoint', os.path.join(proj_dir, 'feature_extraction/vggish_model.ckpt')
-                    ])
+                    '--checkpoint', os.path.join(proj_dir, 'feature_extraction/vggish_model.ckpt')],
+		    stdout = subprocess.DEVNULL)               
 
-    # Call classification/inference program
-    results = inference.main()
+    # Classification/inference
+    results = inference.classify_run1(begin_flag)
 
     return results
+
+if __name__ == "__main__":
+    results = run('Another_day_no_voice.wav')
+    print(results)
