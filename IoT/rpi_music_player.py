@@ -36,10 +36,10 @@ LOST_CONNECTION_FLAG = 0		#Flag if conneection to AWS is lost
 
 """ ******************** SONG GLOBALS ******************** """
 MUSIC_PATH = "/home/pi/{music}"
-SONG1 = "DPunk.mp3"
+SONG0 = "DPunk.mp3"
 SONG3 = "Lite_Weight.mp3"
 SONG2 = "24kGoldn.mp3"
-SONG0 = "Ah_Bellaire.mp3"
+SONG1 = "Ah_Bellaire.mp3"
 SONG4 = "City_of_stars.mp3"
 SONG5 = "Pure_Imagination.mp3"
 SONG_LIST = [SONG0, SONG1, SONG2, SONG3, SONG4, SONG5]
