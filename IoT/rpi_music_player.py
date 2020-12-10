@@ -76,7 +76,7 @@ ACCEL_DATA = '{  "linear_acceleration": {    "values": [      0.0023590326309204
 class MusicChild:
 	def __init__(self, sample_music):
 		# We start at volume 12 (-18dB) range is [-51dB, 6dB] (20 increments)
-		self.child = pexpect.spawn('omxplayer --vol -900 ' + MUSIC_PATH.format(music = sample_music))
+		self.child = pexpect.spawn('omxplayer --vol -600 ' + MUSIC_PATH.format(music = sample_music))
 		self.child.expect(OMXPLAYER_START)
 
 	def changeMusicOutput(self, command):
