@@ -1,1 +1,0 @@
-{"model": "FrameLevelLogisticModel", "feature_sizes": "128", "feature_names": "audio_embedding", "frame_features": true, "label_loss": "CrossEntropyLoss"}
